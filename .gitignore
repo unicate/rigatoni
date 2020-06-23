@@ -1,0 +1,5 @@
+vendor
+app/logs
+.env
+.idea
+.run
