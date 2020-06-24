@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace Nofw\Core;
+namespace Unicate\Rigatoni\Core;
 
 use Symfony\Component\Dotenv\Dotenv;
 

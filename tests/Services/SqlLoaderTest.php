@@ -1,11 +1,11 @@
 <?php
 
-namespace Nofw\Tests\services;
+namespace Unicate\Rigatoni\Tests\services;
 
-use Nofw\Core\Config;
-use Nofw\Core\Constants;
-use Nofw\Services\SqlLoader;
-use Nofw\Tests\AbstractDBService;
+use Unicate\Rigatoni\Core\Config;
+use Unicate\Rigatoni\Core\Constants;
+use Unicate\Rigatoni\Services\SqlLoader;
+use Unicate\Rigatoni\Tests\AbstractDBService;
 
 class SqlLoaderTest extends AbstractDBService {
     private $loader;

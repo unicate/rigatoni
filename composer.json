@@ -15,12 +15,12 @@
   },
   "autoload": {
     "psr-4": {
-      "Nofw\\": "app/"
+      "Unicate\\Rigatoni\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Nofw\\Tests\\": "tests/"
+      "Unicate\\Rigatoni\\Tests\\": "tests/"
     }
   }
 }

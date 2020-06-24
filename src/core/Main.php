@@ -7,14 +7,12 @@
 
 declare(strict_types=1);
 
-namespace Nofw\Core;
+namespace Unicate\Rigatoni\Core;
 
 use DI\ContainerBuilder;
-use Nofw\commands\DBCommand;
-use Nofw\Services\RoutingService;
+use Unicate\Rigatoni\Services\RoutingService;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
-use Nofw\commands\DefaultCommand;
 
 class Main {
 

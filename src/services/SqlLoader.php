@@ -7,10 +7,10 @@
 
 declare(strict_types=1);
 
-namespace Nofw\Services;
+namespace Unicate\Rigatoni\Services;
 
-use Nofw\Core\Config;
-use Nofw\Core\Constants;
+use Unicate\Rigatoni\Core\Config;
+use Unicate\Rigatoni\Core\Constants;
 use PhpMyAdmin\SqlParser\Lexer;
 use PhpMyAdmin\SqlParser\Parser;
 use PhpMyAdmin\SqlParser\Utils\Error;

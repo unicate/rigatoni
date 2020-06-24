@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Nofw\commands;
+namespace Unicate\Rigatoni\commands;
 
 use Nofw\Core\Constants;
 use Symfony\Component\Console\Command\Command;

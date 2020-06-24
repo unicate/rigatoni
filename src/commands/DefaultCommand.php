@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Nofw\commands;
+namespace Unicate\Rigatoni\commands;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

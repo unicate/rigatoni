@@ -5,7 +5,7 @@
  * @license Released under the MIT license
  */
 
-namespace Nofw\Core;
+namespace Unicate\Rigatoni\Core;
 
 class Constants {
 

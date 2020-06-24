@@ -1,15 +1,12 @@
 <?php
 
-namespace Nofw\Tests;
+namespace Unicate\Rigatoni\Tests;
 
 use Medoo\Medoo;
-use Nofw\Core\Config;
-use Nofw\Core\Constants;
-use Nofw\Services\DatabaseService;
+use Unicate\Rigatoni\Core\Config;
+use Unicate\Rigatoni\Core\Constants;
 use PHPUnit\Framework\TestCase;
 use \PDO;
-use Psr\Log\LoggerInterface;
-use Unicate\Logger\Logger;
 
 class AbstractDBService extends TestCase {
 
