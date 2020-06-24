@@ -49,12 +49,12 @@ class SqlLoader {
         return array_values($files);
     }
 
-    public function fileIndex(array $files): array {
+    public function fileIndex(array $files, array $appliedMigrations): array {
         $index = array();
         foreach ($files as $file) {
             $file_prefixes = SqlLoader::UP_MIGRATION . SqlLoader::DOWN_MIGRATION . SqlLoader::REPEAT_MIGRATION;
             $file_extension = SqlLoader::FILE_EXTENSION;
-            $matcher = preg_match('/^([' . $file_prefixes . '])(.*)__(.*)(' . $file_extension . ')/', $file, $file_parts);
+            $matcher = preg_match('/^([' . $file_prefixes . '])(.*)' . SqlLoader::MIGRATION_SEPARATOR . '(.*)(' . $file_extension . ')/', $file, $file_parts);
             if (!$matcher) {
                 continue;
             }
@@ -70,7 +70,8 @@ class SqlLoader {
                 'extension' => $extension,
                 'isRepeatable' => $prefix === SqlLoader::REPEAT_MIGRATION,
                 'isMigration' => $prefix === SqlLoader::UP_MIGRATION,
-                'isUndo' => $prefix === SqlLoader::DOWN_MIGRATION
+                'isUndo' => $prefix === SqlLoader::DOWN_MIGRATION,
+                'isApplied' => in_array($file, $appliedMigrations)
             ];
         }
         uasort($index, function ($a, $b) {
@@ -132,7 +133,7 @@ class SqlLoader {
         $this->db->drop('migrations');
         $this->db->create('migrations', [
             'id' => ['INT', 'NOT NULL', 'AUTO_INCREMENT', 'PRIMARY KEY'],
-            'version' => ['VARCHAR(32)', 'NOT NULL'],
+            'version' => ['VARCHAR(32)', 'NULL'],
             'prefix' => ['CHAR(1)', 'NOT NULL'],
             'description' => ['VARCHAR(256)', 'NOT NULL'],
             'file' => ['VARCHAR(256)', 'NOT NULL'],
@@ -140,7 +141,7 @@ class SqlLoader {
             'status' => ['TINYINT(1)', 'NOT NULL'],
             'installed_on' => ['DATETIME', 'NOT NULL']
         ]);
-       return $this->db->error();
+        return $this->db->error();
     }
 
     public function insertMigration($version, $prefix, $description, $file, $hash, $status) {
@@ -154,6 +155,23 @@ class SqlLoader {
             "installed_on" => date("Y-m-d H:i:s")
         ]);
         return $this->db->error();
+    }
+
+    public function hashFile($file) {
+        return hash_file('md5', Constants::DB_DIR . DIRECTORY_SEPARATOR . $file);
+    }
+
+    public function hashFileCompare($file, $hash) {
+        return hash_file('md5', Constants::DB_DIR . DIRECTORY_SEPARATOR . $file) === $hash;
+    }
+
+    public function getPendingMigrations($version = '') {
+        return $this->db->select('migrations', [
+            'file'
+        ], [
+            "version[>=]" => (empty($version) ? 0 : $version),
+            'prefix' => SqlLoader::UP_MIGRATION
+        ]);
     }
 
 }

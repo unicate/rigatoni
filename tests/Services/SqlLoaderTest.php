@@ -62,32 +62,24 @@ class SqlLoaderTest extends AbstractDBService {
             'X002__Test-Migration-2.sql'
         ];
 
-        $files1 = $this->loader->fileIndex($files);
+        $appliedMigrations = [
+            'R__Test-Migration-1.sql',
+            'V002__Test-Migration-3.sql',
+        ];
+
+        $files1 = $this->loader->fileIndex($files, $appliedMigrations);
         $this->assertEquals([
             'U002__Test-Migration-2.sql',
             'V002__Test-Migration-3.sql',
             'V009__Test-Migration-1.sql',
             'R__Test-Migration-1.sql'
         ], array_keys($files1));
+
+        $this->assertTrue($files1['R__Test-Migration-1.sql']['isApplied']);
+        $this->assertFalse($files1['V009__Test-Migration-1.sql']['isApplied']);
     }
 
-    public function testStartsWith() {
-        $this->assertTrue(
-            SqlLoader::startsWith('U__002_bla.sql', 'U__')
-        );
-        $this->assertFalse(
-            SqlLoader::startsWith('D__002_bla.sql', 'U__')
-        );
-    }
 
-    public function testEndsWith() {
-        $this->assertTrue(
-            $this->loader->endsWith('U__002_bla.sql', '.sql')
-        );
-        $this->assertFalse(
-            $this->loader->endsWith('D__002_bla.txt', '.sql')
-        );
-    }
 
     public function testCheckFiles() {
         $errors = $this->loader->getErrors();
@@ -116,9 +108,38 @@ class SqlLoaderTest extends AbstractDBService {
     }
 
     public function testInsertMigration() {
-        $success = $this->loader->insertMigration('0001', 'V', 'Some Desc', 'file.sql', 'hash', 1);
+        $success = $this->loader->insertMigration('0001', 'V', 'Some Desc', 'V0001__file.sql', 'hash', 1);
         $this->assertEquals(0, intval($success[0]));
 
+        $success = $this->loader->insertMigration('0002', 'V', 'Some Desc', 'V0002__file.sql', 'hash', 1);
+        $this->assertEquals(0, intval($success[0]));
+
+        $success = $this->loader->insertMigration('0004', 'V', 'Some Desc', 'V0004__file.sql', 'hash', 1);
+        $this->assertEquals(0, intval($success[0]));
+
+        $success = $this->loader->insertMigration('0004', 'U', 'Some Desc', 'U0004__file.sql', 'hash', 1);
+        $this->assertEquals(0, intval($success[0]));
+
+        $success = $this->loader->insertMigration('', 'R', 'Some Desc', 'R__file1.sql', 'hash', 1);
+        $this->assertEquals(0, intval($success[0]));
+    }
+
+    public function testHashFile() {
+        $file = 'test.sql';
+        $hash = $this->loader->hashFile($file);
+        $this->assertNotEmpty($hash);
+
+    }
+    public function testHashFileCompare() {
+        $file = 'test.sql';
+        $success = $this->loader->hashFileCompare($file, 'cb74105c53e11874b77add5af061b6fc');
+        $this->assertTrue($success);
+
+    }
+
+    public function testGetPendingMigrations() {
+        $success = $this->loader->getPendingMigrations();
+        $this->assertNotEmpty($success);
     }
 
 

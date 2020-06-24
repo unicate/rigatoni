@@ -1,5 +1,10 @@
-# DB-CLI
+# Rigatoni
 
+https://thenounproject.com/term/rigatoni/2447057/
+
+![alt text][logo]
+
+[logo]: logo.png "Rigatoni"
 ...
 
 ## What is it?
