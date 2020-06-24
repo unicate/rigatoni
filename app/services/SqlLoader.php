@@ -14,6 +14,7 @@ use Nofw\Core\Constants;
 use PhpMyAdmin\SqlParser\Lexer;
 use PhpMyAdmin\SqlParser\Parser;
 use PhpMyAdmin\SqlParser\Utils\Error;
+use Medoo\Medoo;
 use \PDO;
 
 class SqlLoader {
@@ -24,20 +25,18 @@ class SqlLoader {
     const REPEAT_MIGRATION = 'R';
     const MIGRATION_SEPARATOR = '__';
     private $config;
+    private $db;
     private $files = array();
     private $errors = array();
     private $connection;
 
-    public function __construct(Config $config) {
+    public function __construct(Config $config, Medoo $db) {
         $this->config = $config;
-        $this->scanDirectory();
-        $this->checkFiles();
-        $this->checkConnection();
-
+        $this->db = $db;
     }
 
-    private function scanDirectory() {
-        $this->files = array_diff(scandir(Constants::DB_DIR), array('..', '.'));
+    public function scanDirectory() {
+        return array_diff(scandir(Constants::DB_DIR), array('..', '.'));
     }
 
     public function fileFilter(array $fileList, string $startStr = ''): array {
@@ -51,20 +50,19 @@ class SqlLoader {
     }
 
     public function fileIndex(array $files): array {
-
-        $index = [];
+        $index = array();
         foreach ($files as $file) {
             $file_prefixes = SqlLoader::UP_MIGRATION . SqlLoader::DOWN_MIGRATION . SqlLoader::REPEAT_MIGRATION;
             $file_extension = SqlLoader::FILE_EXTENSION;
-            preg_match('/^([' . $file_prefixes . '])(.*)__(.*)(' . $file_extension . ')/', $file, $file_parts);
-            if (empty($file_parts)){
+            $matcher = preg_match('/^([' . $file_prefixes . '])(.*)__(.*)(' . $file_extension . ')/', $file, $file_parts);
+            if (!$matcher) {
                 continue;
             }
             $prefix = $file_parts[1];
             $version = $file_parts[2];
             $description = $file_parts[3];
             $extension = $file_parts[4];
-            $index[] = [
+            $index[$file] = [
                 'filename' => $file,
                 'prefix' => $prefix,
                 'description' => $description,
@@ -75,9 +73,8 @@ class SqlLoader {
                 'isUndo' => $prefix === SqlLoader::DOWN_MIGRATION
             ];
         }
-
-        usort($index, function($a, $b) {
-            return $a['version'] > $b['version'];
+        uasort($index, function ($a, $b) {
+            return strcmp($a['version'] . $a['description'], $b['version'] . $b['description']);
         });
 
         return $index;
@@ -114,17 +111,6 @@ class SqlLoader {
         }
     }
 
-    private function checkConnection() {
-        $dbName = $this->config->getDbName();
-        $dbHost = $this->config->getDbHost();
-        $dbPort = $this->config->getDbPort();
-        $dsn = "mysql:dbname=$dbName;host=$dbHost;port=$dbPort";
-        try {
-            $this->connection = new PDO($dsn, $this->config->getDbUser(), $this->config->getDbPassword());
-        } catch (\RuntimeException $e) {
-            $this->errors[] = $e->getMessage();
-        }
-    }
 
     public function getFiles(): array {
         return $this->files;
@@ -138,34 +124,36 @@ class SqlLoader {
         return empty($this->errors);
     }
 
-    public function getConnection(): PDO {
-        return $this->connection;
+    public function getConnection(): Medoo {
+        return $this->db;
     }
 
-    public function executeAll() {
-        if ($this->allValid()) {
-            $db = $this->getConnection();
-            $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
-            foreach ($this->files as $file) {
-                $sql = file_get_contents(Constants::DB_DIR . DIRECTORY_SEPARATOR . $file);
-                $sql = preg_replace("/\r|\n/", "", $sql);
-                $lines = explode(';', $sql);
-                foreach ($lines as $line) {
-                    if (!empty($line)) {
-                        $prepare = $db->prepare($line);
-                        $err = $prepare->errorInfo();
-
-                        //echo $result;
-                    }
-
-                }
-
-            }
-            return true;
-        } else {
-            return false;
-        }
+    public function setUpMigrations() {
+        $this->db->drop('migrations');
+        $this->db->create('migrations', [
+            'id' => ['INT', 'NOT NULL', 'AUTO_INCREMENT', 'PRIMARY KEY'],
+            'version' => ['VARCHAR(32)', 'NOT NULL'],
+            'prefix' => ['CHAR(1)', 'NOT NULL'],
+            'description' => ['VARCHAR(256)', 'NOT NULL'],
+            'file' => ['VARCHAR(256)', 'NOT NULL'],
+            'hash' => ['VARCHAR(256)', 'NULL'],
+            'status' => ['TINYINT(1)', 'NOT NULL'],
+            'installed_on' => ['DATETIME', 'NOT NULL']
+        ]);
+       return $this->db->error();
     }
 
+    public function insertMigration($version, $prefix, $description, $file, $hash, $status) {
+        $this->db->insert("migrations", [
+            "version" => $version,
+            "prefix" => $prefix,
+            "description" => $description,
+            "file" => $file,
+            "hash" => $hash,
+            "status" => $status,
+            "installed_on" => date("Y-m-d H:i:s")
+        ]);
+        return $this->db->error();
+    }
 
 }

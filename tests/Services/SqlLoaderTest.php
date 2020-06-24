@@ -5,19 +5,20 @@ namespace Nofw\Tests\services;
 use Nofw\Core\Config;
 use Nofw\Core\Constants;
 use Nofw\Services\SqlLoader;
-use PHPUnit\Framework\TestCase;
+use Nofw\Tests\AbstractDBService;
 
-class SqlLoaderTest extends TestCase {
+class SqlLoaderTest extends AbstractDBService {
     private $loader;
 
     protected function setUp() {
         $config = new Config(Constants::CONFIG_FILE);
-        $this->loader = new SqlLoader($config);
+        $db = $this->getDBConnection();
+        $this->loader = new SqlLoader($config, $db);
     }
 
 
     public function testScanDirectory() {
-        $files = $this->loader->getFiles();
+        $files = $this->loader->scanDirectory();
         echo 'Files: ' . print_r($files, true);
         $this->assertNotEmpty($files);
     }
@@ -62,8 +63,12 @@ class SqlLoaderTest extends TestCase {
         ];
 
         $files1 = $this->loader->fileIndex($files);
-        $this->assertNotNull($files1);
-        $this->assertEquals(['R__Test-Migration-1.sql'], $files1);
+        $this->assertEquals([
+            'U002__Test-Migration-2.sql',
+            'V002__Test-Migration-3.sql',
+            'V009__Test-Migration-1.sql',
+            'R__Test-Migration-1.sql'
+        ], array_keys($files1));
     }
 
     public function testStartsWith() {
@@ -102,9 +107,18 @@ class SqlLoaderTest extends TestCase {
         $this->assertEmpty($errors);
     }
 
-    public function testExecuteAll() {
-        $success = $this->loader->executeAll();
-        $this->assertTrue($success);
+ // PHLOX!!!
+
+    public function testSetUpMigrations() {
+        $success = $this->loader->setUpMigrations();
+        $this->assertEquals(0, intval($success[0]));
+
+    }
+
+    public function testInsertMigration() {
+        $success = $this->loader->insertMigration('0001', 'V', 'Some Desc', 'file.sql', 'hash', 1);
+        $this->assertEquals(0, intval($success[0]));
+
     }
 
 

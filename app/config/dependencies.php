@@ -1,20 +1,10 @@
 <?php
 
-use League\Plates\Engine;
 use Medoo\Medoo;
 use Nofw\commands\DBCommand;
-use Nofw\commands\DefaultCommand;
 use Nofw\Core\Config;
 use Nofw\Core\Constants;
-use Nofw\Services\TranslationService;
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use Symfony\Component\Console\Application;
-use Tuupola\Middleware\JwtAuthentication;
-use Unicate\LanguageDetection\LanguageDetection;
-use Unicate\Logger\Logger;
-use Unicate\Translation\Translation;
-use \Psr\Log\LoggerInterface;
 
 return [
 
@@ -30,7 +20,23 @@ return [
 
         return $application;
     },
-
+    Medoo::class => function (Config $config) {
+        $dbConfig = [
+            'database_type' => 'mysql',
+            'server' => $config->getDbHost(),
+            'port' => $config->getDbPort(),
+            'database_name' => $config->getDbName(),
+            'username' => $config->getDbUser(),
+            'password' => $config->getDbPassword(),
+            'charset' => 'utf8',
+            "logging" => true,
+            'prefix' => '',
+            'option' => [
+                PDO::ATTR_CASE => PDO::CASE_NATURAL
+            ]
+        ];
+        return new Medoo($dbConfig);
+    },
 
 
 ];
