@@ -50,31 +50,6 @@ class DBCommand extends Command {
             return Command::FAILURE;
         }
 
-        $dsn = 'mysql:dbname=nofw;host=127.0.0.1;port=8889';
-        $user = 'nofw_app';
-        $password = '123456';
-
-        try {
-            $db = new PDO($dsn, $user, $password);
-        } catch (PDOException $e) {
-            $output->writeln('Connection failed: ' . $e->getMessage());
-        }
-
-
-        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-
-
-
-       $success = $db->exec($sql);
-        //$success = $db->query(), PDO);
-        if ($success === false) {
-            //$output->writeln('Fail');
-        } else{
-            //$output->writeln('OK' . print_r($success->errorInfo(),true));
-        }
-
-
 
         return Command::SUCCESS;
     }
