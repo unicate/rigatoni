@@ -4,6 +4,7 @@ namespace Unicate\Rigatoni\Tests\Core;
 
 use Unicate\Rigatoni\Core\Config;
 use Unicate\Rigatoni\Core\Constants;
+use Unicate\Rigatoni\core\Migration;
 use Unicate\Rigatoni\Core\Rigatoni;
 use Unicate\Rigatoni\Tests\AbstractDBService;
 
@@ -13,6 +14,41 @@ class RigatoniTest extends AbstractDBService {
     protected function setUp() {
         $db = $this->getDBConnection();
         $this->rigatoni = new Rigatoni($db);
+    }
+
+    public function testSetUpMigrations() {
+        $success = $this->rigatoni->setUpMigrations();
+        $this->assertEquals(0, intval($success[0]));
+    }
+
+    /**
+     * @depends testSetUpMigrations
+     */
+    public function testGetFileMigrations() {
+        $migrations = $this->rigatoni->getFileMigrations();
+        $this->assertNotEmpty($migrations);
+    }
+
+    /**
+     * @depends testGetFileMigrations
+     */
+    public function testGetDBMigrations() {
+        $migrations = $this->rigatoni->getDBMigrations();
+        $this->assertNotEmpty($migrations);
+    }
+
+    public function testApplyMigration() {
+        $this->rigatoni->refresh();
+        $migration = new Migration('V', '001', 'V001__Test.sql');
+        $this->rigatoni->applyMigration($migration);
+    }
+
+    public function testUpMigrations() {
+        $this->rigatoni->refresh();
+        $migrations = $this->rigatoni->getDBMigrations('V');
+        foreach ($migrations as $migration) {
+            $this->rigatoni->applyMigration($migration);
+        }
     }
 
 
@@ -41,37 +77,8 @@ class RigatoniTest extends AbstractDBService {
         $this->assertEquals(['R__Test-Migration-1.sql'], $files4);
     }
 
-    public function testFileIndex() {
-        $files = [
-            'R__Test-Migration-1.sql',
-            'V009__Test-Migration-1.sql',
-            '001_test.sql',
-            '002_test.sql',
-            'V__001_test.slq',
-            'V002__Test-Migration-3.sql',
-            'bla.txt',
-            'U002__Test-Migration-2.sql',
-            'X002__Test-Migration-2.sql'
-        ];
 
-        $appliedMigrations = [
-            'R__Test-Migration-1.sql',
-            'V002__Test-Migration-3.sql',
-        ];
-
-        $files1 = $this->rigatoni->getIndex($files, $appliedMigrations);
-        $this->assertEquals([
-            'U002__Test-Migration-2.sql',
-            'V002__Test-Migration-3.sql',
-            'V009__Test-Migration-1.sql',
-            'R__Test-Migration-1.sql'
-        ], array_keys($files1));
-
-        $this->assertTrue($files1['R__Test-Migration-1.sql']['isApplied']);
-        $this->assertFalse($files1['V009__Test-Migration-1.sql']['isApplied']);
-    }
-
-    public function testGetPendingMigrations() {
+    public function xtestGetPendingMigrations() {
         $this->rigatoni->refresh();
         $pendingMigrations1 = $this->rigatoni->getPendingMigrations();
         $this->assertNotNull($pendingMigrations1);
@@ -80,7 +87,7 @@ class RigatoniTest extends AbstractDBService {
         $this->assertArrayHasKey('V003__Test.sql', $pendingMigrations1);
     }
 
-    public function testGetUndoMigrations() {
+    public function xtestGetUndoMigrations() {
         $this->rigatoni->refresh();
         $undoMigrations1 = $this->rigatoni->getUndoMigrations('001');
         $this->assertArrayHasKey('U001__Test.sql', $undoMigrations1);
@@ -92,20 +99,14 @@ class RigatoniTest extends AbstractDBService {
         $this->assertArrayHasKey('U003__Test.sql', $undoMigrations2);
     }
 
-    public function testGetRepeatableMigrations() {
+    public function xtestGetRepeatableMigrations() {
         $this->rigatoni->refresh();
         $repeatableMigrations1 = $this->rigatoni->getRepeatableMigrations();
         $this->assertArrayHasKey('R__Test.sql', $repeatableMigrations1);
     }
 
 
-    public function testSetUpMigrations() {
-        $success = $this->rigatoni->setUpMigrations();
-        $this->assertEquals(0, intval($success[0]));
-
-    }
-
-    public function testInsertMigration() {
+    public function xtestInsertMigration() {
         $success = $this->rigatoni->insertMigration('0001', 'V', 'Some Desc', 'V0001__file.sql', 'hash', Rigatoni::MIGRATION_STATUS_SUCCESS);
         $this->assertEquals(0, intval($success[0]));
 
@@ -120,7 +121,16 @@ class RigatoniTest extends AbstractDBService {
 
         $success = $this->rigatoni->insertMigration('', 'R', 'Some Desc', 'R__file1.sql', 'hash', Rigatoni::MIGRATION_STATUS_SUCCESS);
         $this->assertEquals(0, intval($success[0]));
+
+        $success = $this->rigatoni->insertMigration('', 'R', 'Some Desc', 'R__file1.sql', 'hash', Rigatoni::MIGRATION_STATUS_FAILED, 'ERROR Text');
+        $this->assertEquals(0, intval($success[0]));
     }
+
+    public function xtestApplyMigration() {
+        $success = $this->rigatoni->applyMigration([]);
+        $this->assertNotNull($success);
+    }
+
 
     public function xxxtestHashFile() {
         $file = 'test.sql';
@@ -135,8 +145,6 @@ class RigatoniTest extends AbstractDBService {
         $this->assertTrue($success);
 
     }
-
-
 
 
 }

@@ -1,9 +1,9 @@
 use `nofw`;
-DROP TABLE IF EXISTS `nofw_test_002`;
-CREATE TABLE `nofw_test_002`
+DROP TABLE IF EXISTS `nofw_V004__Test`;
+CREATE TABLE `nofw_V004__Test`
 (
     `id`            int(11) unsigned NOT NULL AUTO_INCREMENT,
-    `name`          varchar(256)     NOT NULL DEFAULT '',
+    `name          varchar(256)     NOT NULL DEFAULT '',
     `text`         varchar(256)     NOT NULL DEFAULT '',
     `status`        tinyint(1)      NOT NULL,
     PRIMARY KEY (`id`)
@@ -12,7 +12,7 @@ CREATE TABLE `nofw_test_002`
   DEFAULT CHARSET = utf8;
 
 
-INSERT INTO `nofw_test_002` (`name`, `text`, `status`)
+INSERT INTO `nofw_V004__Test` (`name`, `text`, `status`)
 VALUES
-    ('first', 'Some Test Version 1', '1'),
+    ('first', 'Some Test Version 1', '1',
     ('second', 'Some Test Version 2', '2');
