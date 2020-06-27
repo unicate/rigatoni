@@ -1,4 +1,3 @@
-use `nofw`;
 DROP TABLE IF EXISTS `nofw_V004__Test`;
 CREATE TABLE `nofw_V004__Test`
 (

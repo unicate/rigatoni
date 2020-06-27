@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace Unicate\Rigatoni\Core;
 
 use DI\ContainerBuilder;
+use Unicate\Rigatoni\Commands\MigrationCommand;
+use Unicate\Rigatoni\Commands\SetupCommand;
 use Unicate\Rigatoni\Services\RoutingService;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
@@ -22,6 +24,12 @@ class Main {
 
         // CLI Application
         $application = $container->get(Application::class);
+        $command = $container->get(SetupCommand::class);
+        $application->add($command);
+        //$application->setDefaultCommand($command->getName(), true);
+
+        $application->add($container->get(MigrationCommand::class));
+
         $application->run();
     }
 

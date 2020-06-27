@@ -17,7 +17,7 @@ class RigatoniTest extends AbstractDBService {
     }
 
     public function testSetUpMigrations() {
-        $success = $this->rigatoni->setUpMigrations();
+        $success = $this->rigatoni->setupMigrations();
         $this->assertEquals(0, intval($success[0]));
     }
 
@@ -46,9 +46,12 @@ class RigatoniTest extends AbstractDBService {
     public function testUpMigrations() {
         $this->rigatoni->refresh();
         $migrations = $this->rigatoni->getDBMigrations('V');
+        $success = array();
         foreach ($migrations as $migration) {
-            $this->rigatoni->applyMigration($migration);
+            $success =$this->rigatoni->applyMigration($migration);
+            $this->assertTrue($success);
         }
+
     }
 
 

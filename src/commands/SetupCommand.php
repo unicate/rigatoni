@@ -1,31 +1,29 @@
 <?php
 
 
-namespace Unicate\Rigatoni\commands;
+namespace Unicate\Rigatoni\Commands;
 
-use Nofw\Core\Constants;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
-use \PDO;
-use \PDOException;
-use PhpMyAdmin\SqlParser\Parser;
-use PhpMyAdmin\SqlParser\Utils\Formatter;
+use Unicate\Rigatoni\Core\Rigatoni;
 
-class DBCommand extends Command {
+class SetupCommand extends Command {
 
-    private $sqlLoader;
+    private $rigatoni;
 
-    public function __construct(SqlLoader $sqlLoader) {
-        $this->sqlLoader = $sqlLoader;
+    public function __construct(Rigatoni $rigatoni) {
+
+        $this->rigatoni = $rigatoni;
+        parent::__construct();
     }
 
     protected function configure() {
         $this
-            ->setName('db:install')
+            ->setName('setup')
             ->setDescription('DB Install')
             ->addArgument(
                 'name',
@@ -41,15 +39,18 @@ class DBCommand extends Command {
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
-
-
         $helper = $this->getHelper('question');
-        $question = new ConfirmationQuestion('Continue with this action?', false);
+        $question = new ConfirmationQuestion(
+            'Setup migrations in database. Existing table \'migrations\' will be dropped ?',
+            false
+        );
 
         if (!$helper->ask($input, $output, $question)) {
             return Command::FAILURE;
         }
 
+        $success = $this->rigatoni->setupMigrations();
+        $output->writeln($success);
 
         return Command::SUCCESS;
     }

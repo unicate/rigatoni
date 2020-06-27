@@ -11,6 +11,6 @@ class Constants {
 
     const CONFIG_FILE = __DIR__ . "/../config/.env";
     const SQL_DIR = __DIR__ . "/../../db";
-    const DEPENDENCY_FILE = __DIR__ . "/../config/dependencies.php";
+    const DEPENDENCY_FILE = __DIR__ . "/../core/dependencies.php";
 
 }

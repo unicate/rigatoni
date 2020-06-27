@@ -83,15 +83,19 @@ class Rigatoni {
      * Gets array with Migration items from database.
      * @param string $prefix
      * @param string $version
+     * @param string status
      * @return Migration[]
      */
-    public function getDBMigrations($prefix = '', $version = '') {
+    public function getDBMigrations($prefix = '', $version = '', $status = '') {
         $query = [];
         if (!empty ($prefix)) {
             $query['prefix'] = $prefix;
         }
         if (!empty ($version)) {
             $query['version'] = $version;
+        }
+        if (!empty ($status)) {
+            $query['status'] = $status;
         }
         $dbMigrations = $this->db->select(
             'migrations', '*', $query, ['ORDER' => ["version" => "asc"]]
@@ -127,7 +131,7 @@ class Rigatoni {
      * Creates database table for migrations.
      * @return string Error Message
      */
-    public function setUpMigrations() {
+    public function setupMigrations() {
         $this->db->drop('migrations');
         $this->db->create('migrations', [
             'id' => ['VARCHAR(32)', 'NOT NULL', 'PRIMARY KEY'],
@@ -195,7 +199,7 @@ class Rigatoni {
         }));
     }
 
-    public function applyMigration(Migration $migration) {
+    public function applyMigration(Migration $migration) : bool {
         // Read SQL file
         $sql = file_get_contents($this->sqlDir . DIRECTORY_SEPARATOR . $migration->getFile());
 
@@ -226,8 +230,7 @@ class Rigatoni {
         }
         $this->updateMigration($migration);
 
-        //$pdo = $this->db->query($sql);
-        return $errors;
+        return empty($errors);
 
 
     }
