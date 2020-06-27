@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Unicate\Rigatoni\core\Migration;
 use Unicate\Rigatoni\Core\Rigatoni;
 
 class MigrationCommand extends Command {
@@ -32,7 +33,7 @@ class MigrationCommand extends Command {
             ->addOption(
                 'v',
                 null,
-                InputOption::VALUE_NONE,
+                InputOption::VALUE_REQUIRED,
                 'The version'
             );
     }
@@ -42,6 +43,7 @@ class MigrationCommand extends Command {
         $this->rigatoni->refresh();
 
         $action = $input->getArgument('action');
+        $version = $input->getOption('v');
         $helper = $this->getHelper('question');
         $question = new ConfirmationQuestion(
             'Migrate ' . $action . '?',
@@ -53,19 +55,13 @@ class MigrationCommand extends Command {
         }
 
 
-        if ($action == 'undo') {
-            $migrations = $this->rigatoni->getDBMigrations(
-                Rigatoni::DOWN_MIGRATION,
-                '', // any version
-                Rigatoni::MIGRATION_STATUS_PENDING
-            );
+        if ($action == 'undo' && !(empty($version))) {
+            $migrations = $this->rigatoni->getUndoMigrations($version);
         } else {
-            // Default up migrations
-            $migrations = $this->rigatoni->getDBMigrations(
-                Rigatoni::UP_MIGRATION,
-                '', // any version
-                Rigatoni::MIGRATION_STATUS_PENDING
-            );
+            // Default pending migrations
+            $pending = $this->rigatoni->getPendingMigrations();
+            $repeatable = $this->rigatoni->getRepeatableMigrations();
+            $migrations = array_merge($pending, $repeatable);
         }
 
         if (empty($migrations)) {
@@ -76,8 +72,22 @@ class MigrationCommand extends Command {
             $success = $this->rigatoni->applyMigration($migration);
             $success = ($success === true) ? Rigatoni::MIGRATION_STATUS_SUCCESS : Rigatoni::MIGRATION_STATUS_FAILED;
             $output->writeln('Migration: ' . $migration->getFile() . ' -> ' . $success);
-        }
+            if ($migration->getPrefix() === Rigatoni::DOWN_MIGRATION &&
+                $migration->getVersion() === $version) {
 
+                $undoneMigrations = $this->rigatoni->getMigration(Rigatoni::UP_MIGRATION, $migration->getVersion());
+
+                reset($undoneMigrations);
+                $first_key = key($undoneMigrations);
+                $m = $undoneMigrations[$first_key];
+                //$output->writeln(print_r($m, true));
+                if (!empty($m)) {
+                    $m->setStatus(Rigatoni::MIGRATION_STATUS_PENDING);
+                    $this->rigatoni->updateMigration($m);
+                }
+
+            }
+        }
 
         return Command::SUCCESS;
     }

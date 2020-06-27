@@ -110,6 +110,11 @@ class Rigatoni {
             $migration->setStatus($entry['status']);
             $migrations[$entry['id']] = $migration;
         }
+
+        uasort($migrations, function ($a, $b) {
+            return strcmp($a->getVersion() , $b->getVersion());
+        });
+
         return $migrations;
     }
 
@@ -194,12 +199,34 @@ class Rigatoni {
     }
 
     public function getPendingMigrations() {
-        return (array_filter($this->index, function ($val) {
-            return $val['isMigration'] === true && $val['isApplied'] === false;
-        }));
+        return $this->getDBMigrations(
+            Rigatoni::UP_MIGRATION,
+            '', // any version
+            Rigatoni::MIGRATION_STATUS_PENDING
+        );
     }
 
-    public function applyMigration(Migration $migration) : bool {
+    public function getRepeatableMigrations() {
+        return $this->getDBMigrations(
+            Rigatoni::REPEAT_MIGRATION
+        );
+    }
+
+    public function getUndoMigrations($version) {
+        return $this->getDBMigrations(
+            Rigatoni::DOWN_MIGRATION,
+            $version
+        );
+    }
+
+    public function getMigration($prefix, $version) {
+        return $this->getDBMigrations(
+            $prefix,
+            $version
+        );
+    }
+
+    public function applyMigration(Migration $migration): bool {
         // Read SQL file
         $sql = file_get_contents($this->sqlDir . DIRECTORY_SEPARATOR . $migration->getFile());
 
