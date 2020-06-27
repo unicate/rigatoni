@@ -70,7 +70,7 @@ class Rigatoni {
             if (!$matcher) {
                 continue;
             }
-            $migrations[md5($file)] = new Migration(
+            $migrations[] = new Migration(
                 $file_parts[1], // Prefix
                 $file_parts[2], // Version
                 $file
@@ -108,7 +108,7 @@ class Rigatoni {
                 $entry['file']
             );
             $migration->setStatus($entry['status']);
-            $migrations[$entry['id']] = $migration;
+            $migrations[] = $migration;
         }
 
         uasort($migrations, function ($a, $b) {
@@ -125,7 +125,10 @@ class Rigatoni {
      * @return array
      */
     private function sync(array $fileMigrations, array $dbMigrations): array {
-        $diff = array_diff_key($fileMigrations, $dbMigrations);
+        //$diff = array_diff_key($fileMigrations, $dbMigrations);
+        $diff = array_udiff($fileMigrations, $dbMigrations, function(Migration $a, Migration $b){
+            return $a->getFile() !== $b->getFile();
+        });
         foreach ($diff as $migration) {
             $this->insertMigration($migration);
         }

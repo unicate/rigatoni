@@ -15,7 +15,7 @@ class Migration {
     private $installedOn;
 
     public function __construct($prefix, $version, $file) {
-        $this->id = md5($file);
+        $this->id = crc32($file);
         $this->prefix = $prefix;
         $this->version = $version;
         $this->file = $file;
