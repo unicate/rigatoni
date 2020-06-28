@@ -71,19 +71,15 @@ class MigrationCommand extends Command {
         foreach ($migrations as $migration) {
             $success = $this->rigatoni->applyMigration($migration);
             $success = ($success === true) ? Rigatoni::MIGRATION_STATUS_SUCCESS : Rigatoni::MIGRATION_STATUS_FAILED;
-            $output->writeln('Migration: ' . $migration->getFile() . ' -> ' . $success);
-            if ($migration->getPrefix() === Rigatoni::DOWN_MIGRATION &&
-                $migration->getVersion() === $version) {
-
+            $output->writeln('Undo-Migration: ' . $migration->getFile() . ' -> ' . $success);
+            if ($migration->getPrefix() === Rigatoni::DOWN_MIGRATION) {
                 $undoneMigrations = $this->rigatoni->getMigration(Rigatoni::UP_MIGRATION, $migration->getVersion());
-
-                reset($undoneMigrations);
-                $first_key = key($undoneMigrations);
-                $m = $undoneMigrations[$first_key];
-                //$output->writeln(print_r($m, true));
-                if (!empty($m)) {
-                    $m->setStatus(Rigatoni::MIGRATION_STATUS_PENDING);
-                    $this->rigatoni->updateMigration($m);
+                if (!empty($undoneMigrations)) {
+                    ($undoneMigrations[0])->setStatus(Rigatoni::MIGRATION_STATUS_PENDING);
+                    ($undoneMigrations[0])->setErrors(null);
+                    ($undoneMigrations[0])->setInstalledOn(null);
+                    $this->rigatoni->updateMigration($undoneMigrations[0]);
+                    $output->writeln('Undone Migration: ' .  ($undoneMigrations[0])->getFile() . ' -> ' . $success);
                 }
 
             }

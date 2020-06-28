@@ -36,6 +36,22 @@ class Rigatoni {
     }
 
     /**
+     * @todo
+     * Creates config file and folder for DB migrations
+     * in project root.
+     */
+    public function init() {
+    }
+
+    /**
+     * @todo
+     * Health Check & consistency
+     * only one file with Prefix and Version!!!
+     */
+    public function healthCheck() {
+    }
+
+    /**
      * The directory for the file migrations.
      * Default is @param string $path
      * @see Constants::SQL_DIR
@@ -49,7 +65,7 @@ class Rigatoni {
      */
     public function refresh() {
         $fileMigrations = $this->getFileMigrations();
-        $dbMigrations = $this->getDBMigrations();
+        $dbMigrations = $this->getAllMigrations();
         $this->sync($fileMigrations, $dbMigrations);
     }
 
@@ -79,44 +95,6 @@ class Rigatoni {
         return $migrations;
     }
 
-    /**
-     * Gets array with Migration items from database.
-     * @param string $prefix
-     * @param string $version
-     * @param string status
-     * @return Migration[]
-     */
-    public function getDBMigrations($prefix = '', $version = '', $status = '') {
-        $query = [];
-        if (!empty ($prefix)) {
-            $query['prefix'] = $prefix;
-        }
-        if (!empty ($version)) {
-            $query['version'] = $version;
-        }
-        if (!empty ($status)) {
-            $query['status'] = $status;
-        }
-        $dbMigrations = $this->db->select(
-            'migrations', '*', $query, ['ORDER' => ["version" => "asc"]]
-        );
-        $migrations = array();
-        foreach ($dbMigrations as $entry) {
-            $migration = new Migration(
-                $entry['prefix'],
-                $entry['version'],
-                $entry['file']
-            );
-            $migration->setStatus($entry['status']);
-            $migrations[] = $migration;
-        }
-
-        uasort($migrations, function ($a, $b) {
-            return strcmp($a->getVersion() , $b->getVersion());
-        });
-
-        return $migrations;
-    }
 
     /**
      * Synchronizes file- and db migrations.
@@ -126,7 +104,7 @@ class Rigatoni {
      */
     private function sync(array $fileMigrations, array $dbMigrations): array {
         //$diff = array_diff_key($fileMigrations, $dbMigrations);
-        $diff = array_udiff($fileMigrations, $dbMigrations, function(Migration $a, Migration $b){
+        $diff = array_udiff($fileMigrations, $dbMigrations, function (Migration $a, Migration $b) {
             return $a->getFile() !== $b->getFile();
         });
         foreach ($diff as $migration) {
@@ -191,42 +169,62 @@ class Rigatoni {
         return $success === 0;
     }
 
-    public function getAppliedMigrations() {
-        return $this->db->select('migrations', [
-            'file'
-        ], [
-            'prefix' => Rigatoni::UP_MIGRATION
-        ], [
-            'ORDER' => ["version" => "asc"]
-        ]);
+    public function getAllMigrations() {
+        $result = $this->db->select(
+            'migrations', '*', [
+                'ORDER' => ['version' => 'ASC']
+            ]
+        );
+        $this->db->last();
+        return ($result === false) ? array() : $this->toMigration($result);
     }
 
     public function getPendingMigrations() {
-        return $this->getDBMigrations(
-            Rigatoni::UP_MIGRATION,
-            '', // any version
-            Rigatoni::MIGRATION_STATUS_PENDING
+        $result = $this->db->select(
+            'migrations', '*',
+            [
+                'prefix' => Rigatoni::UP_MIGRATION,
+                'status' => Rigatoni::MIGRATION_STATUS_PENDING,
+                'ORDER' => ['version' => 'ASC']
+            ]
         );
+        $this->db->last();
+        return ($result === false) ? array() : $this->toMigration($result);
     }
 
     public function getRepeatableMigrations() {
-        return $this->getDBMigrations(
-            Rigatoni::REPEAT_MIGRATION
+        $result = $this->db->select(
+            'migrations', '*',
+            [
+                'prefix' => Rigatoni::REPEAT_MIGRATION,
+                'ORDER' => ['version' => 'ASC']
+            ]
         );
+        return ($result === false) ? array() : $this->toMigration($result);
     }
 
     public function getUndoMigrations($version) {
-        return $this->getDBMigrations(
-            Rigatoni::DOWN_MIGRATION,
-            $version
+        $result = $this->db->select(
+            'migrations', '*',
+            [
+                'prefix' => Rigatoni::DOWN_MIGRATION,
+                'version[>=]' => $version,
+                'ORDER' => ['version' => 'DESC']
+            ]
         );
+        return ($result === false) ? array() : $this->toMigration($result);
     }
 
     public function getMigration($prefix, $version) {
-        return $this->getDBMigrations(
-            $prefix,
-            $version
+        $result = $this->db->select(
+            'migrations', '*',
+            [
+                'prefix' => $prefix,
+                'version' => $version,
+                'ORDER' => ['version' => 'ASC']
+            ]
         );
+        return ($result === false) ? array() : $this->toMigration($result);
     }
 
     public function applyMigration(Migration $migration): bool {
@@ -263,6 +261,18 @@ class Rigatoni {
         return empty($errors);
 
 
+    }
+
+    public function toMigration(array $list): array {
+        $migrations = array();
+        foreach ($list as $entry) {
+            $migration = new Migration($entry['prefix'], $entry['version'], $entry['file']);
+            $migration->setStatus($entry['status']);
+            $migration->setErrors($entry['errors']);
+            $migration->setInstalledOn($entry['installed_on']);
+            $migrations[] = $migration;
+        }
+        return $migrations;
     }
 
 

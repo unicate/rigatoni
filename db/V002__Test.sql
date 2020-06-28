@@ -1,5 +1,4 @@
-DROP TABLE IF EXISTS `nofw_test_002`;
-CREATE TABLE `nofw_test_002`
+CREATE TABLE `test_002`
 (
     `id`            int(11) unsigned NOT NULL AUTO_INCREMENT,
     `name`          varchar(256)     NOT NULL DEFAULT '',
@@ -11,7 +10,7 @@ CREATE TABLE `nofw_test_002`
   DEFAULT CHARSET = utf8;
 
 
-INSERT INTO `nofw_test_002` (`name`, `text`, `status`)
+INSERT INTO `test_002` (`name`, `text`, `status`)
 VALUES
     ('first', 'Some Test Version 1', '1'),
     ('second', 'Some Test Version 2', '2');
