@@ -31,6 +31,9 @@
 - If you delete a migration entry from the migrations-table, but the migration-file still exists, it will be re-inserted as PENDING.
 
 
+Path are relative to Project root. It is assumed, that that is where the composer.json file is located.
+
+
 ## Getting Started
 
 Installation Use Git or Composer:

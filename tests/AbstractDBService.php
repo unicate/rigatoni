@@ -11,7 +11,8 @@ use \PDO;
 class AbstractDBService extends TestCase {
 
     protected function getDBConnection() {
-        $config = new Config(Constants::CONFIG_FILE);
+        $jsonFile =  '/../../rigatoni.json';
+        $config = new Config($jsonFile);
         $dbConfig = [
             'database_type' => 'mysql',
             'server' => $config->getDbHost(),

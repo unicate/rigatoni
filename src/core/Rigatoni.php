@@ -28,11 +28,11 @@ class Rigatoni {
     const MIGRATION_STATUS_PENDING = 'PENDING';
 
     private $db;
-    private $sqlDir = Constants::SQL_DIR;
-    private $index;
+    private $sqlDir;
 
-    public function __construct(Medoo $db) {
+    public function __construct(Medoo $db, Config $config) {
         $this->db = $db;
+        $this->setSqlDir($config->getRootDirectory() . $config->getSqlDirectory());
     }
 
     /**
@@ -41,6 +41,7 @@ class Rigatoni {
      * in project root.
      */
     public function init() {
+        return true;
     }
 
     /**
@@ -52,9 +53,9 @@ class Rigatoni {
     }
 
     /**
+     * @todo Refactor!!!
      * The directory for the file migrations.
      * Default is @param string $path
-     * @see Constants::SQL_DIR
      */
     public function setSqlDir(string $path) {
         $this->sqlDir = $path;
