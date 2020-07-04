@@ -14,5 +14,5 @@ CREATE TABLE `nofw_test2`
 
 INSERT INTO `nofw_test2xxx` (`name`, `text`, `status`)
 VALUES
-    ('first', 'Some Test Version 1', '1'),
-    ('second', 'Some Test Version 2', '2');
+    ('first', 'Some Check Version 1', '1'),
+    ('second', 'Some Check Version 2', '2');

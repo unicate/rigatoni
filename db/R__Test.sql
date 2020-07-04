@@ -13,5 +13,5 @@ CREATE TABLE `r__test`
 
 INSERT INTO `r__test` (`name`, `text`, `status`)
 VALUES
-    ('first', 'Some Test Version 1', '1'),
-    ('second', 'Some Test Version 2', '2');
+    ('first', 'Some Check Version 1', '1'),
+    ('second', 'Some Check Version 2', '2');

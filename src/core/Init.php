@@ -21,17 +21,7 @@ class Init {
 
     }
 
-    /**
-     * @todo
-     * Creates config file and folder for DB migrations
-     * in project root.
-     */
-    public function init() {
-        return $this->jsonConfig();
-    }
-
-
-    public function jsonConfig() {
+    public function initConfig() {
         $data = [
             'current_env' => 'dev_1',
             'env' => [
@@ -44,9 +34,9 @@ class Init {
                     'sql_dir' => '/db'
                 ],
                 'dev_2' => [
-                    'db_host' => 'The-DB-Host',
+                    'db_host' => '127.0.0.1',
+                    'db_port' => '8889',
                     'db_name' => 'The-DB-Name',
-                    'db_port' => 'The-DB-Port',
                     'db_user' => 'The-DB-User',
                     'db_pwd' => 'The-DB-Password',
                     'sql_dir' => '/relative/path/to/sql'
@@ -55,7 +45,7 @@ class Init {
         ];
         $file = Config::getConfigFilePath();
         echo $file;
-        $json = json_encode($data, JSON_PRETTY_PRINT| JSON_UNESCAPED_SLASHES);
+        $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         return file_put_contents($file, $json) >= 1;
     }
 

@@ -87,5 +87,8 @@ class Config {
         return self::getEnvRootDirectory() . '/' . self::$configFileName;
     }
 
+    public function getSQLFolderPath() {
+        return self::getEnvRootDirectory() . $this->sqlDirectory;
+    }
 
 }

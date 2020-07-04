@@ -38,8 +38,7 @@ class InitCommand extends Command {
             return Command::FAILURE;
         }
 
-        //$success = $this->rigatoni->init();
-        $success= $this->init->init();
+        $success= $this->init->initConfig();
         $success = ($success === true) ? Rigatoni::MIGRATION_STATUS_SUCCESS : Rigatoni::MIGRATION_STATUS_FAILED;
         $output->writeln($success);
 

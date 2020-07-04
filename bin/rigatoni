@@ -14,9 +14,9 @@ foreach ($filePath as $file) {
     }
 }
 if (!getenv('RIGATONI_ROOT')){
-    throw new \RuntimeException('Could not determine root directory. 
+    throw new \RuntimeException('Could not determine the project root directory. 
     You may need to set the environment variable RIGATONI_ROOT manually.');
-    die();
+    exit(1);
 }
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/core/Main.php';
