@@ -14,7 +14,7 @@ use \PDO;
 use \PDOException;
 use phpDocumentor\Reflection\Types\Array_;
 
-class Init {
+class InitConfig {
 
 
     public function __construct() {
@@ -44,7 +44,6 @@ class Init {
             ]
         ];
         $file = Config::getConfigFilePath();
-        echo $file;
         $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         return file_put_contents($file, $json) >= 1;
     }

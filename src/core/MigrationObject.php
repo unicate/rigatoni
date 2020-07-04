@@ -4,7 +4,7 @@
 namespace Unicate\Rigatoni\core;
 
 
-class Migration {
+class MigrationObject {
     private $id;
     private $prefix;
     private $version;
@@ -19,7 +19,7 @@ class Migration {
         $this->prefix = $prefix;
         $this->version = $version;
         $this->file = $file;
-        $this->status = Rigatoni::MIGRATION_STATUS_PENDING;
+        $this->status = AbstractMigration::MIGRATION_STATUS_PENDING;
         $this->errors = '';
         $this->installedOn = null;
     }

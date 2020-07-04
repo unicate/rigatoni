@@ -9,7 +9,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Unicate\Rigatoni\core\Check;
 use Symfony\Component\Console\Helper\Table;
 use Unicate\Rigatoni\utils\Formatter;
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
 class CheckCommand extends Command {
 
@@ -17,8 +16,6 @@ class CheckCommand extends Command {
 
     public function __construct(Check $check) {
         $this->check = $check;
-
-
         parent::__construct();
     }
 

@@ -33,6 +33,17 @@
 
 Path are relative to Project root. It is assumed, that that is where the composer.json file is located.
 
+## Commands
+- init
+    - Creates a new config file.
+- check
+    - Checks the configuration, the DB connection and if the folder for the SQL migrations exists.
+- setup
+    - Creates new table for the migration information.
+- migrate
+    - Executes the pending migrations.
+- undo
+    - can undo executed migrations
 
 ## Getting Started
 

@@ -9,33 +9,23 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
-use Unicate\Rigatoni\Core\Rigatoni;
+use Unicate\Rigatoni\core\FacadeInterface;
+use Unicate\Rigatoni\core\MigrationFacade;
+use Unicate\Rigatoni\utils\Formatter;
 
 class SetupCommand extends Command {
 
-    private $rigatoni;
+    private $facade;
 
-    public function __construct(Rigatoni $rigatoni) {
-
-        $this->rigatoni = $rigatoni;
+    public function __construct(MigrationFacade $facade) {
+        $this->facade = $facade;
         parent::__construct();
     }
 
     protected function configure() {
         $this
             ->setName('setup')
-            ->setDescription('DB Install')
-            ->addArgument(
-                'name',
-                InputArgument::OPTIONAL,
-                'Who do you want to greet?'
-            )
-            ->addOption(
-                'yell',
-                null,
-                InputOption::VALUE_NONE,
-                'If set, the task will yell in uppercase letters'
-            );
+            ->setDescription('DB Install');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
@@ -49,8 +39,8 @@ class SetupCommand extends Command {
             return Command::FAILURE;
         }
 
-        $success = $this->rigatoni->setupMigrations();
-        $output->writeln($success);
+        $success = $this->facade->setup();
+        $output->writeln(Formatter::success($success));
 
         return Command::SUCCESS;
     }

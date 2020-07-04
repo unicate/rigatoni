@@ -30,10 +30,11 @@ class Main {
         // CLI Application
         $application = $container->get(Application::class);
 
-        // Init Commands (always available)
+        // InitConfig Commands (always available)
         $application->add($container->get(InitCommand::class));
 
-        // Add Setup, Migration and other commands only if we have a working configuration.
+        // Add Setup, VersionedMigration and other commands only
+        // if we have a working configuration.
         if (file_exists(Config::getConfigFilePath())) {
             $application->add($container->get(CheckCommand::class));
             $application->add($container->get(SetupCommand::class));
@@ -74,7 +75,6 @@ class Main {
             },
         ];
     }
-
 
 }
 

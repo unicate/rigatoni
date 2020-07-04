@@ -51,11 +51,4 @@ class FileUtil {
         }
     }
 
-    public function hashFile($file) {
-        return hash_file('md5', Constants::SQL_DIR . DIRECTORY_SEPARATOR . $file);
-    }
-
-    public function hashFileCompare($file, $hash) {
-        return hash_file('md5', Constants::SQL_DIR . DIRECTORY_SEPARATOR . $file) === $hash;
-    }
 }

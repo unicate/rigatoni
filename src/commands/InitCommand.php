@@ -9,28 +9,29 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
-use Unicate\Rigatoni\Core\Rigatoni;
-use Unicate\Rigatoni\Core\Init;
+use Unicate\Rigatoni\Core\AbstractMigration;
+use Unicate\Rigatoni\core\MigrationFacade;
+use Unicate\Rigatoni\Core\InitConfig;
 
 class InitCommand extends Command {
 
-    private $rigatoni;
+    private $initConfig;
 
-    public function __construct(Init $init) {
-        $this->init = $init;
+    public function __construct(InitConfig $initConfig) {
+        $this->initConfig = $initConfig;
         parent::__construct();
     }
 
     protected function configure() {
         $this
             ->setName('init')
-            ->setDescription('Init');
+            ->setDescription('InitConfig');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
         $helper = $this->getHelper('question');
         $question = new ConfirmationQuestion(
-            'Init Project overwrite config?',
+            'InitConfig Project overwrite config?',
             false
         );
 
@@ -38,8 +39,8 @@ class InitCommand extends Command {
             return Command::FAILURE;
         }
 
-        $success= $this->init->initConfig();
-        $success = ($success === true) ? Rigatoni::MIGRATION_STATUS_SUCCESS : Rigatoni::MIGRATION_STATUS_FAILED;
+        $success= $this->initConfig->initConfig();
+        $success = ($success === true) ? AbstractMigration::MIGRATION_STATUS_SUCCESS : AbstractMigration::MIGRATION_STATUS_FAILED;
         $output->writeln($success);
 
         return Command::SUCCESS;
