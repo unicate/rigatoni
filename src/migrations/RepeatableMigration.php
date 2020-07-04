@@ -1,10 +1,14 @@
 <?php
+/**
+ * @author https://unicate.ch
+ * @copyright Copyright (c) 2020
+ * @license Released under the MIT license
+ */
 
-
-namespace Unicate\Rigatoni\core;
-
+namespace Unicate\Rigatoni\Migrations;
 
 use Medoo\Medoo;
+use Unicate\Rigatoni\Core\Config;
 use \PDO;
 use \PDOException;
 
@@ -22,7 +26,7 @@ class RepeatableMigration extends AbstractMigration {
 
     public function getAll() {
         $result = $this->db->select(
-            'migrations', '*',
+            AbstractMigration::MIGRATION_TABLE_NAME, '*',
             [
                 'prefix' => AbstractMigration::PREFIX_REPEATABLE_MIGRATION,
                 'ORDER' => ['version' => 'ASC']

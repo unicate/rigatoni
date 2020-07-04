@@ -1,8 +1,14 @@
 <?php
+/**
+ * @author https://unicate.ch
+ * @copyright Copyright (c) 2020
+ * @license Released under the MIT license
+ */
 
-namespace Unicate\Rigatoni\core;
+namespace Unicate\Rigatoni\Migrations;
 
 use Medoo\Medoo;
+use Unicate\Rigatoni\Core\Config;
 use \PDO;
 use \PDOException;
 
@@ -23,8 +29,8 @@ class SetupMigration extends AbstractMigration {
      * @return bool
      */
     public function createTable() : bool {
-        $this->db->drop('migrations');
-        $pdo = $this->db->create('migrations', [
+        $this->db->drop(AbstractMigration::MIGRATION_TABLE_NAME);
+        $pdo = $this->db->create(AbstractMigration::MIGRATION_TABLE_NAME, [
             'id' => ['VARCHAR(32)', 'NOT NULL', 'PRIMARY KEY'],
             'prefix' => ['CHAR(1)', 'NOT NULL'],
             'version' => ['VARCHAR(32)', 'NULL'],

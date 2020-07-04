@@ -1,10 +1,14 @@
 <?php
+/**
+ * @author https://unicate.ch
+ * @copyright Copyright (c) 2020
+ * @license Released under the MIT license
+ */
+
+namespace Unicate\Rigatoni\Migrations;
 
 
-namespace Unicate\Rigatoni\core;
-
-
-class MigrationFacade implements FacadeInterface {
+class MigrationFacade implements MigrationFacadeInterface {
 
     /**
      * MigrationFacade constructor.
@@ -58,15 +62,15 @@ class MigrationFacade implements FacadeInterface {
         $this->fileMigration->sync($fileMigrations, $dbMigrations);
     }
 
-    public function applyMigration(MigrationObject $migration) {
+    public function applyMigration(MigrationVO $migration) {
         return $this->genericMigration->applyMigration($migration);
     }
 
-    public function getMigration($prefix, $version) {
+    public function getMigration($prefix, $version): MigrationVO {
         return $this->genericMigration->getMigration($prefix, $version);
     }
 
-    public function updateMigration(MigrationObject $migration) {
+    public function updateMigration(MigrationVO $migration) {
         return $this->genericMigration->updateMigration($migration);
     }
 }

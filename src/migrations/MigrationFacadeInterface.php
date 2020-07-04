@@ -1,10 +1,14 @@
 <?php
+/**
+ * @author https://unicate.ch
+ * @copyright Copyright (c) 2020
+ * @license Released under the MIT license
+ */
+
+namespace Unicate\Rigatoni\Migrations;
 
 
-namespace Unicate\Rigatoni\core;
-
-
-interface FacadeInterface {
+interface MigrationFacadeInterface {
 
     public function setup();
 
@@ -18,10 +22,10 @@ interface FacadeInterface {
 
     public function refresh();
 
-    public function applyMigration(MigrationObject $migration);
+    public function applyMigration(MigrationVO $migration);
 
     public function getMigration($prefix, $version);
 
-    public function updateMigration(MigrationObject $migration);
+    public function updateMigration(MigrationVO $migration);
 
 }

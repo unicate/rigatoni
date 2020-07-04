@@ -15,6 +15,8 @@ use Unicate\Rigatoni\Commands\CheckCommand;
 use Unicate\Rigatoni\Commands\InitCommand;
 use Unicate\Rigatoni\Commands\MigrationCommand;
 use Unicate\Rigatoni\Commands\SetupCommand;
+use Unicate\Rigatoni\Commands\UndoCommand;
+use Unicate\Rigatoni\Migrations\UndoMigration;
 use Unicate\Rigatoni\Services\RoutingService;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
@@ -39,6 +41,7 @@ class Main {
             $application->add($container->get(CheckCommand::class));
             $application->add($container->get(SetupCommand::class));
             $application->add($container->get(MigrationCommand::class));
+            $application->add($container->get(UndoCommand::class));
         }
 
         $application->run();

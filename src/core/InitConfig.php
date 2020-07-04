@@ -9,11 +9,6 @@ declare(strict_types=1);
 
 namespace Unicate\Rigatoni\Core;
 
-use Medoo\Medoo;
-use \PDO;
-use \PDOException;
-use phpDocumentor\Reflection\Types\Array_;
-
 class InitConfig {
 
 

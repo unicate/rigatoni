@@ -1,8 +1,14 @@
 <?php
+/**
+ * @author https://unicate.ch
+ * @copyright Copyright (c) 2020
+ * @license Released under the MIT license
+ */
 
-namespace Unicate\Rigatoni\core;
+namespace Unicate\Rigatoni\Migrations;
 
 use Medoo\Medoo;
+use Unicate\Rigatoni\Core\Config;
 use \PDO;
 use \PDOException;
 
@@ -20,45 +26,43 @@ class GenericMigration extends AbstractMigration {
 
     /**
      * Get all migrations from database.
-     * @return MigrationObject[]
+     * @return MigrationVO[]
      */
-    public function getAllMigrations() {
+    public function getAllMigrations(): array {
         $result = $this->db->select(
-            'migrations', '*', [
+            AbstractMigration::MIGRATION_TABLE_NAME, '*', [
                 'ORDER' => ['version' => 'ASC']
             ]
         );
-        $this->db->last();
-        return ($result === false) ? array() : $this->toMigration($result);
+        return ($result === false) ? $this->toMigration([]) : $this->toMigration($result);
     }
 
     /**
-     * Tries to get exactly one migration from database. However an array is returned
+     * Get exactly one migration from database.
      * @param $prefix
      * @param $version
-     * @return array
-     * @todo Make shure only exactly one migration is returned.
+     * @return MigrationVO
      */
-    public function getMigration($prefix, $version) {
+    public function getMigration($prefix, $version): MigrationVO {
         $result = $this->db->select(
-            'migrations', '*',
+            AbstractMigration::MIGRATION_TABLE_NAME, '*',
             [
                 'prefix' => $prefix,
                 'version' => $version,
                 'ORDER' => ['version' => 'ASC']
             ]
         );
-        return ($result === false) ? array() : $this->toMigration($result);
+        return (!empty($result)) ? $this->toMigration($result)[0] : new MigrationVO('', '', '');
     }
 
     /**
      * Updates exactly one migration in the migration table.
      * Identified by the migration-id.
-     * @param MigrationObject $migration
+     * @param MigrationVO $migration
      * @return bool Success
      */
-    public function updateMigration(MigrationObject $migration): bool {
-        $this->db->update("migrations", [
+    public function updateMigration(MigrationVO $migration): bool {
+        $pdo = $this->db->update(AbstractMigration::MIGRATION_TABLE_NAME, [
             "id" => $migration->getId(),
             "prefix" => $migration->getPrefix(),
             "version" => $migration->getVersion(),
@@ -70,16 +74,15 @@ class GenericMigration extends AbstractMigration {
         ], [
             "id" => $migration->getId()
         ]);
-        $success = intval($this->db->error()[0]);
-        return $success === 0;
+        return $pdo->errorCode() === '00000';
     }
 
     /**
      * Executes the migration sql against the database and applies the migration.
-     * @param MigrationObject $migration
+     * @param MigrationVO $migration
      * @return bool Success
      */
-    public function applyMigration(MigrationObject $migration): bool {
+    public function applyMigration(MigrationVO $migration): bool {
         // Read SQL file
         $sql = file_get_contents($this->config->getSQLFolderPath() . '/' . $migration->getFile());
 

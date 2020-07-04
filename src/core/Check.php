@@ -1,7 +1,11 @@
 <?php
+/**
+ * @author https://unicate.ch
+ * @copyright Copyright (c) 2020
+ * @license Released under the MIT license
+ */
 
-
-namespace Unicate\Rigatoni\core;
+namespace Unicate\Rigatoni\Core;
 
 use Medoo\Medoo;
 

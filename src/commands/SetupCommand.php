@@ -1,24 +1,30 @@
 <?php
-
+/**
+ * @author https://unicate.ch
+ * @copyright Copyright (c) 2020
+ * @license Released under the MIT license
+ */
 
 namespace Unicate\Rigatoni\Commands;
 
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
-use Unicate\Rigatoni\core\FacadeInterface;
-use Unicate\Rigatoni\core\MigrationFacade;
-use Unicate\Rigatoni\utils\Formatter;
+use Unicate\Rigatoni\Core\Config;
+use Unicate\Rigatoni\Migrations\AbstractMigration;
+use Unicate\Rigatoni\Migrations\MigrationFacade;
+use Unicate\Rigatoni\Utils\Formatter;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 
 class SetupCommand extends Command {
 
     private $facade;
+    private $config;
 
-    public function __construct(MigrationFacade $facade) {
+    public function __construct(MigrationFacade $facade, Config $config) {
         $this->facade = $facade;
+        $this->config = $config;
         parent::__construct();
     }
 
@@ -30,9 +36,13 @@ class SetupCommand extends Command {
 
     protected function execute(InputInterface $input, OutputInterface $output) {
         $helper = $this->getHelper('question');
-        $question = new ConfirmationQuestion(
-            'Setup migrations in database. Existing table \'migrations\' will be dropped ?',
-            false
+        $output->writeln('');
+        $output->writeln('Setup migrations in database \'' . $this->config->getDbName() . '\'.');
+        $output->writeln('Existing migration table will be dropped.');
+        $output->writeln('');
+        $question = new ConfirmationQuestion('Do you want to continue? [y/n]',
+            false,
+            '/^(y|j)/i'
         );
 
         if (!$helper->ask($input, $output, $question)) {
@@ -40,7 +50,9 @@ class SetupCommand extends Command {
         }
 
         $success = $this->facade->setup();
-        $output->writeln(Formatter::success($success));
+        $output->writeln('');
+        $output->writeln('Table \'' . AbstractMigration::MIGRATION_TABLE_NAME . '\' created. ' . Formatter::success($success));
+        $output->writeln('');
 
         return Command::SUCCESS;
     }

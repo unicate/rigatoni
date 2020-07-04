@@ -1,8 +1,14 @@
 <?php
+/**
+ * @author https://unicate.ch
+ * @copyright Copyright (c) 2020
+ * @license Released under the MIT license
+ */
 
-namespace Unicate\Rigatoni\core;
+namespace Unicate\Rigatoni\Migrations;
 
 use Medoo\Medoo;
+use Unicate\Rigatoni\Core\Config;
 use \PDO;
 use \PDOException;
 
@@ -20,7 +26,7 @@ class VersionedMigration extends AbstractMigration {
 
     public function getAll() {
         $result = $this->db->select(
-            'migrations', '*',
+            AbstractMigration::MIGRATION_TABLE_NAME, '*',
             [
                 'prefix' => AbstractMigration::PREFIX_VERSIONED_MIGRATION,
                 'ORDER' => ['version' => 'ASC']
@@ -31,14 +37,17 @@ class VersionedMigration extends AbstractMigration {
 
     public function getAllPending() {
         $result = $this->db->select(
-            'migrations', '*',
+            AbstractMigration::MIGRATION_TABLE_NAME, '*',
             [
                 'prefix' => AbstractMigration::PREFIX_VERSIONED_MIGRATION,
-                'status' => AbstractMigration::MIGRATION_STATUS_PENDING,
+                'status' => [
+                    AbstractMigration::MIGRATION_STATUS_PENDING,
+                    AbstractMigration::MIGRATION_STATUS_UNDONE
+                ],
                 'ORDER' => ['version' => 'ASC']
             ]
         );
-        return ($result === false) ? array() : $this->toMigration($result);
+        return ($result === false) ? $this->toMigration([]) : $this->toMigration($result);
     }
 
 }

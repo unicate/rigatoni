@@ -1,10 +1,15 @@
 <?php
+/**
+ * @author https://unicate.ch
+ * @copyright Copyright (c) 2020
+ * @license Released under the MIT license
+ */
 
-
-namespace Unicate\Rigatoni\core;
+namespace Unicate\Rigatoni\Migrations;
 
 
 use Medoo\Medoo;
+use Unicate\Rigatoni\Core\Config;
 
 class FileMigration extends AbstractMigration {
 
@@ -23,9 +28,9 @@ class FileMigration extends AbstractMigration {
 
     /**
      * Generates array with VersionedMigration items from files.
-     * @return MigrationObject[]
+     * @return MigrationVO[]
      */
-    public function getAll() {
+    public function getAll(): array {
         $migrations = array();
         // Scan files in directory
         $files = array_diff(scandir($this->config->getSQLFolderPath()), array('..', '.'));
@@ -38,7 +43,7 @@ class FileMigration extends AbstractMigration {
             if (!$matcher) {
                 continue;
             }
-            $migrations[] = new MigrationObject(
+            $migrations[] = new MigrationVO(
                 $file_parts[1], // Prefix
                 $file_parts[2], // Version
                 $file
@@ -54,8 +59,8 @@ class FileMigration extends AbstractMigration {
      * @return array
      */
     public function sync(array $fileMigrations, array $dbMigrations): array {
-        $diff = array_udiff($fileMigrations, $dbMigrations, function (MigrationObject $a, MigrationObject $b) {
-            return $a->getFile() !== $b->getFile();
+        $diff = array_udiff($fileMigrations, $dbMigrations, function (MigrationVO $a, MigrationVO $b) {
+            return !$a->equals($b);
         });
         foreach ($diff as $migration) {
             $this->insertMigration($migration);
@@ -65,11 +70,11 @@ class FileMigration extends AbstractMigration {
 
     /**
      * Insert one migration into migration table.
-     * @param MigrationObject $migration
+     * @param MigrationVO $migration
      * @return bool Success
      */
-    private function insertMigration(MigrationObject $migration): bool {
-        $this->db->insert("migrations", [
+    private function insertMigration(MigrationVO $migration): bool {
+        $this->db->insert(AbstractMigration::MIGRATION_TABLE_NAME, [
             "id" => $migration->getId(),
             "prefix" => $migration->getPrefix(),
             "version" => $migration->getVersion(),

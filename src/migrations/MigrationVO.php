@@ -1,10 +1,14 @@
 <?php
+/**
+ * @author https://unicate.ch
+ * @copyright Copyright (c) 2020
+ * @license Released under the MIT license
+ */
+
+namespace Unicate\Rigatoni\Migrations;
 
 
-namespace Unicate\Rigatoni\core;
-
-
-class MigrationObject {
+class MigrationVO {
     private $id;
     private $prefix;
     private $version;
@@ -82,5 +86,12 @@ class MigrationObject {
         $this->installedOn = $installedOn;
     }
 
+    public function equals(MigrationVO $vo) : bool {
+        return $this->getId() === $vo->getId();
+    }
+
+    public function empty() : bool {
+        return empty($this->getFile());
+    }
 
 }

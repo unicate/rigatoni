@@ -1,5 +1,11 @@
 #!/usr/bin/env php
 <?php
+/**
+ * @author https://unicate.ch
+ * @copyright Copyright (c) 2020
+ * @license Released under the MIT license
+ */
+
 $filePath = [
     __DIR__ . '/../rigatoni.json',
     __DIR__ . '/../../rigatoni.json',

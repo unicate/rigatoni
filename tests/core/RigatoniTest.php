@@ -5,7 +5,7 @@ namespace Unicate\Rigatoni\Tests\Core;
 use Unicate\Rigatoni\Core\AbstractMigration;
 use Unicate\Rigatoni\Core\Config;
 use Unicate\Rigatoni\Core\Constants;
-use Unicate\Rigatoni\core\MigrationFacade;
+use Unicate\Rigatoni\core\MigrationMigrationFacade;
 use Unicate\Rigatoni\core\MigrationObject;
 use Unicate\Rigatoni\Core\Rigatoni;
 use Unicate\Rigatoni\Tests\AbstractDBService;

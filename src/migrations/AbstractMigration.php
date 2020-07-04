@@ -7,9 +7,10 @@
 
 declare(strict_types=1);
 
-namespace Unicate\Rigatoni\Core;
+namespace Unicate\Rigatoni\Migrations;
 
 use Medoo\Medoo;
+use Unicate\Rigatoni\Core\Config;
 use \PDO;
 use \PDOException;
 
@@ -22,6 +23,7 @@ abstract class AbstractMigration {
     public const MIGRATION_SEPARATOR = '__';
     public const FILE_EXTENSION = '.sql';
     public const STATEMENT_DELIMITER = ';';
+    public const MIGRATION_TABLE_NAME = 'migration';
 
     public const MIGRATION_STATUS_SUCCESS = 'SUCCESS';
     public const MIGRATION_STATUS_PENDING = 'PENDING';
@@ -42,13 +44,13 @@ abstract class AbstractMigration {
     /**
      * Converts an array of database records to an array ob Migration objects.
      * @param array $list
-     * @return MigrationObject[]
-     * @see MigrationObject
+     * @return MigrationVO[]
+     * @see MigrationVO
      */
     public function toMigration(array $list): array {
         $migrations = array();
         foreach ($list as $entry) {
-            $migration = new MigrationObject($entry['prefix'], $entry['version'], $entry['file']);
+            $migration = new MigrationVO($entry['prefix'], $entry['version'], $entry['file']);
             $migration->setStatus($entry['status']);
             $migration->setErrors($entry['errors']);
             $migration->setInstalledOn($entry['installed_on']);
