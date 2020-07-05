@@ -5,20 +5,18 @@
  * @license Released under the MIT license
  */
 
-namespace Unicate\Rigatoni\Commands;
+namespace Unicate\Rigatoni\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Unicate\Rigatoni\Core\Config;
-use Unicate\Rigatoni\Migrations\AbstractMigration;
-use Unicate\Rigatoni\Migrations\MigrationFacade;
-use Unicate\Rigatoni\Migrations\MigrationVO;
-use Unicate\Rigatoni\Utils\Formatter;
+use Unicate\Rigatoni\Migration\AbstractMigration;
+use Unicate\Rigatoni\Migration\MigrationFacade;
+use Unicate\Rigatoni\Util\Formatter;
 
 class UndoCommand extends Command {
 
@@ -34,19 +32,19 @@ class UndoCommand extends Command {
     protected function configure() {
         $this
             ->setName('undo')
-            ->setDescription('Undo migration')
-            ->addOption(
-                'v',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'The version'
+            ->setDescription('Reverts migrations down to version.')
+            ->addArgument(
+                'version',
+                InputArgument::OPTIONAL,
+                'Version to migrate down to.',
+                '0'
             );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
         $this->facade->refresh();
 
-        $version = $input->getOption('v');
+        $version = $input->getArgument('version');
         $helper = $this->getHelper('question');
         $output->writeln('');
         $output->writeln('Database \'' . $this->config->getDbName() . '\'.');

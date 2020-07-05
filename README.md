@@ -2,16 +2,16 @@
 ![alt text][logo]
 # Rigatoni
 
-> A simple dish, made of fresh SQL migrations.
-
+> A simple dish - made of fresh SQL migrations.
 
 ## What is it?
 - Rigatoni manages SQL migrations.
 - It uses plain old SQL files. No need to learn a new framework.
-- It's heavily inspired by tools like Fly way or Phinx.
+- It's heavily inspired by tools like [Fly way](https://flywaydb.org/) or [Phinx](https://phinx.org/).
 - It should be easy and intuitive to use.
-- It can be integrated into your project as composer package.
 - Use it via commandline interface (CLI) or write your own integration.
+- It can be used as stand-alone application to manage your DB migrations.
+- It can be integrated into your project as composer package.
 
 ## Rules
 - Migrations are written in plain old SQL.
@@ -19,48 +19,55 @@
     - Versioned-Migrations: Only executed once and the filename needs to start with V and followed by the version.
     - Repeatable migrations: Executed every time the migration runs. The filename needs to start with R and is not versioned.
     - Undo-Migrations. The filename needs to start with U and followed by the version. It must be called with a specific version.
+- Every Versioned-Migration should have a corresponding Undo-Migration.
 - New Migrations are always in state PENDING.
-- Each statement of a migration will be executed separately. 
+- Each SQL statement of a migration will be executed separately. 
     - If one statement fails, the whole migration will be marked as FAILED. All errors are listed in the migrations-table.
-    - Sucessfully executed migrations are marked with SUCCESS.
-- Versioned migrations are executed by version in ascending order. Repeatable migrations are executed afterwards.
+    - Successful executed migrations will be marked with SUCCESS.
+- Versioned migrations will be executed in ascending order by version. Repeatable migrations are executed afterwards.
 - If you want to revert a migration, call the Undo-Migration. 
     - All Undo-Migrations with version >= the passed version will be executed.
-    - The reverted migration will be marked as PENDING again. 
+    - The reverted migration will be marked as UNDONE again. 
     - The Undo-Migration is marked with SUCCESS.
 - If you delete a migration entry from the migrations-table, but the migration-file still exists, it will be re-inserted as PENDING.
-
-
-Path are relative to Project root. It is assumed, that that is where the composer.json file is located.
+- Paths are relative to project root. It is assumed, that is where we find the composer.json file.
 
 ## Commands
 - init
-    - Creates a new config file.
+    - Creates a new config file in project root directory.
 - check
     - Checks the configuration, the DB connection and if the folder for the SQL migrations exists.
 - setup
-    - Creates new table for the migration information.
+    - Creates a fresh table for the migration information.
 - migrate
     - Executes the pending migrations.
 - undo
-    - can undo executed migrations
+    - Reverts executed migrations.
 
-## Getting Started
+## Installation
 
 Installation Use Git or Composer:
 
 ```
-git clone https://github.com/unicate/xxx.git my-project-name
+git clone https://github.com/unicate/rigatoni.git my-project-name
 composer install
 ```
 
 ```
-composer create-project unicate/xxx my-project-name
+composer create-project unicate/rigatoni my-project-name
 ```
+## Commands
+
 Init - Creates a config file in your project root.
 
 ```
 ./rigatoni init
+```
+
+Check - Does some config and connection checking.
+
+```
+./rigatoni check
 ```
 
 Setup - Migrations-table will be created. (existing will be dropped).
@@ -68,7 +75,7 @@ Setup - Migrations-table will be created. (existing will be dropped).
 ```
 ./rigatoni setup
 ```
-Migrate - Versioned and repeatable migrations.
+Migrate - Executes versioned and repeatable migrations.
 
 ```
 ./rigatoni migrate
@@ -77,8 +84,12 @@ Migrate - Versioned and repeatable migrations.
 Undo migration
 
 ```
-./rigatoni migrate undo -v 004
+./rigatoni undo 004
 ```
+## Own Integration
+In case you would like to write your own integration to use Rigatoni in 
+your project just have a look at the MigrationFacade class and the methods
+provided.
 
 ## Disclaimer & License
 

@@ -5,40 +5,34 @@
  * @license Released under the MIT license
  */
 
-namespace Unicate\Rigatoni\Commands;
+namespace Unicate\Rigatoni\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Unicate\Rigatoni\Util\Formatter;
 use Unicate\Rigatoni\Core\Config;
-use Unicate\Rigatoni\Migrations\AbstractMigration;
-use Unicate\Rigatoni\Migrations\MigrationFacade;
-use Unicate\Rigatoni\Utils\Formatter;
-use Symfony\Component\Console\Question\ChoiceQuestion;
 
-class SetupCommand extends Command {
+class InitCommand extends Command {
 
-    private $facade;
-    private $config;
+    private $initConfig;
 
-    public function __construct(MigrationFacade $facade, Config $config) {
-        $this->facade = $facade;
-        $this->config = $config;
+    public function __construct() {
         parent::__construct();
     }
 
     protected function configure() {
         $this
-            ->setName('setup')
-            ->setDescription('DB Install');
+            ->setName('init')
+            ->setDescription('Creates new config file.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
         $helper = $this->getHelper('question');
         $output->writeln('');
-        $output->writeln('Setup migrations in database \'' . $this->config->getDbName() . '\'.');
-        $output->writeln('Existing migration table will be dropped.');
+        $output->writeln('Create config file \'' . Config::getConfigFilePath() . '\'.');
+        $output->writeln('This will overwrite the existing config file.');
         $output->writeln('');
         $question = new ConfirmationQuestion('Do you want to continue? [y/n]',
             false,
@@ -49,9 +43,9 @@ class SetupCommand extends Command {
             return Command::FAILURE;
         }
 
-        $success = $this->facade->setup();
+        $success = Config::createConfig();
         $output->writeln('');
-        $output->writeln('Table \'' . AbstractMigration::MIGRATION_TABLE_NAME . '\' created. ' . Formatter::success($success));
+        $output->writeln('Config file created. ' . Formatter::success($success));
         $output->writeln('');
 
         return Command::SUCCESS;

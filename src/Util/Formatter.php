@@ -5,13 +5,7 @@
  * @license Released under the MIT license
  */
 
-namespace Unicate\Rigatoni\Utils;
-
-
-use PhpMyAdmin\SqlParser\Lexer;
-use PhpMyAdmin\SqlParser\Parser;
-use PhpMyAdmin\SqlParser\Utils\Error;
-use Unicate\Rigatoni\Core\Constants;
+namespace Unicate\Rigatoni\Util;
 
 class Formatter {
 

@@ -11,12 +11,12 @@ namespace Unicate\Rigatoni\Core;
 
 use DI\ContainerBuilder;
 use Medoo\Medoo;
-use Unicate\Rigatoni\Commands\CheckCommand;
-use Unicate\Rigatoni\Commands\InitCommand;
-use Unicate\Rigatoni\Commands\MigrationCommand;
-use Unicate\Rigatoni\Commands\SetupCommand;
-use Unicate\Rigatoni\Commands\UndoCommand;
-use Unicate\Rigatoni\Migrations\UndoMigration;
+use Unicate\Rigatoni\Command\CheckCommand;
+use Unicate\Rigatoni\Command\DefaultCommand;
+use Unicate\Rigatoni\Command\InitCommand;
+use Unicate\Rigatoni\Command\MigrationCommand;
+use Unicate\Rigatoni\Command\SetupCommand;
+use Unicate\Rigatoni\Command\UndoCommand;
 use Unicate\Rigatoni\Services\RoutingService;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
@@ -31,6 +31,9 @@ class Main {
 
         // CLI Application
         $application = $container->get(Application::class);
+        $defaultCommand = $container->get(DefaultCommand::class);
+        $application->add($defaultCommand);
+        $application->setDefaultCommand($defaultCommand->getName(), false);
 
         // InitConfig Commands (always available)
         $application->add($container->get(InitCommand::class));

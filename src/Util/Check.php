@@ -5,9 +5,10 @@
  * @license Released under the MIT license
  */
 
-namespace Unicate\Rigatoni\Core;
+namespace Unicate\Rigatoni\Util;
 
 use Medoo\Medoo;
+use Unicate\Rigatoni\Core\Config;
 
 class Check {
     private $db;

@@ -5,14 +5,14 @@
  * @license Released under the MIT license
  */
 
-namespace Unicate\Rigatoni\Commands;
+namespace Unicate\Rigatoni\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Unicate\Rigatoni\Core\Check;
 use Symfony\Component\Console\Helper\Table;
-use Unicate\Rigatoni\Utils\Formatter;
+use Unicate\Rigatoni\Util\Check;
+use Unicate\Rigatoni\Util\Formatter;
 
 class CheckCommand extends Command {
 
@@ -26,10 +26,11 @@ class CheckCommand extends Command {
     protected function configure() {
         $this
             ->setName('check')
-            ->setDescription('Check DB and SQL folder.');
+            ->setDescription('Checks config setup and DB connection.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
+        $output->writeln('');
         $table = new Table($output);
         $table
             ->setHeaders(['Check', 'Info'])
@@ -43,6 +44,8 @@ class CheckCommand extends Command {
                 ]
             );
         $table->render();
+
+        $output->writeln('');
 
         return Command::SUCCESS;
     }

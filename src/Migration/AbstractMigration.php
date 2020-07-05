@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace Unicate\Rigatoni\Migrations;
+namespace Unicate\Rigatoni\Migration;
 
 use Medoo\Medoo;
 use Unicate\Rigatoni\Core\Config;

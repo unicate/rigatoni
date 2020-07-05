@@ -5,20 +5,16 @@
  * @license Released under the MIT license
  */
 
-namespace Unicate\Rigatoni\Commands;
+namespace Unicate\Rigatoni\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Unicate\Rigatoni\Core\Config;
-use Unicate\Rigatoni\Migrations\AbstractMigration;
-use Unicate\Rigatoni\Migrations\MigrationFacade;
-use Unicate\Rigatoni\Migrations\MigrationVO;
-use Unicate\Rigatoni\Utils\Formatter;
+use Unicate\Rigatoni\Migration\MigrationFacade;
+use Unicate\Rigatoni\Util\Formatter;
 
 class MigrationCommand extends Command {
 
@@ -34,7 +30,7 @@ class MigrationCommand extends Command {
     protected function configure() {
         $this
             ->setName('migrate')
-            ->setDescription('DB Install');
+            ->setDescription('Executes pending migrations.');
 
     }
 

@@ -25,5 +25,5 @@ if (!getenv('RIGATONI_ROOT')){
     exit(1);
 }
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../src/core/Main.php';
+require_once __DIR__ . '/../src/Core/Main.php';
 

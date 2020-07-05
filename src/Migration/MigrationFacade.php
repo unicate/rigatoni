@@ -5,10 +5,10 @@
  * @license Released under the MIT license
  */
 
-namespace Unicate\Rigatoni\Migrations;
+namespace Unicate\Rigatoni\Migration;
 
 
-class MigrationFacade implements MigrationFacadeInterface {
+class MigrationFacade {
 
     /**
      * MigrationFacade constructor.

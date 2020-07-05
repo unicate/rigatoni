@@ -5,7 +5,7 @@
  * @license Released under the MIT license
  */
 
-namespace Unicate\Rigatoni\Migrations;
+namespace Unicate\Rigatoni\Migration;
 
 
 use Medoo\Medoo;
