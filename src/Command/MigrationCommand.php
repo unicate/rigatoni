@@ -39,7 +39,7 @@ class MigrationCommand extends Command {
 
         $helper = $this->getHelper('question');
         $output->writeln('');
-        $output->writeln('Database \'' . $this->config->getDbName() . '\'.');
+        $output->writeln('Database <options=bold>' . $this->config->getDbName() . '</>.');
         $output->writeln('Apply all pending migrations');
         $output->writeln('');
         $question = new ConfirmationQuestion('Do you want to continue? [y/n]',

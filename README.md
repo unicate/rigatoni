@@ -7,7 +7,7 @@
 ## What is it?
 - Rigatoni manages SQL migrations.
 - It uses plain old SQL files. No need to learn a new framework.
-- It's heavily inspired by tools like [Fly way](https://flywaydb.org/) or [Phinx](https://phinx.org/).
+- It's heavily inspired by tools like [Flyway](https://flywaydb.org/) or [Phinx](https://phinx.org/).
 - It should be easy and intuitive to use.
 - Use it via commandline interface (CLI) or write your own integration.
 - It can be used as stand-alone application to manage your DB migrations.
@@ -50,11 +50,12 @@ Installation Use Git or Composer:
 
 ```
 git clone https://github.com/unicate/rigatoni.git my-project-name
-composer install
+composer install --no-dev
 ```
-
+Use the option --no-dev if you just want to run migrations. 
+(Other dependencies are only for testing.)
 ```
-composer create-project unicate/rigatoni my-project-name
+composer create-project unicate/rigatoni my-project-name --no-dev
 ```
 ## Commands
 

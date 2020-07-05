@@ -47,7 +47,7 @@ class UndoCommand extends Command {
         $version = $input->getArgument('version');
         $helper = $this->getHelper('question');
         $output->writeln('');
-        $output->writeln('Database \'' . $this->config->getDbName() . '\'.');
+        $output->writeln('Database <options=bold>' . $this->config->getDbName() . '</>.');
         $output->writeln('Undo all migrations down to version \''. $version.'\'.');
         $output->writeln('');
         $question = new ConfirmationQuestion('Do you want to continue? [y/n]',

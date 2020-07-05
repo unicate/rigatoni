@@ -12,7 +12,7 @@ class ConfigTest extends TestCase {
 
     public function testConfig() {
         $filePath = [
-            __DIR__ . '/../rigatoni.json',
+            __DIR__ . '/../autoload.php',
             __DIR__ . '/../../rigatoni.json',
             __DIR__ . '/../composer.json',
             __DIR__ . '/../../composer.json'
@@ -33,6 +33,19 @@ class ConfigTest extends TestCase {
         putenv('RIGATONI_ROOT=/some/path/to/root/dir');
         $root = getenv('RIGATONI_ROOT');
         $this->assertEquals('/some/path/to/root/dir', $root);
+    }
+
+    public function testFindVendor() {
+        $dir = __DIR__ . '/';
+        while (empty(glob($dir . 'vendor', GLOB_ONLYDIR))) {
+            $dir .= '../';
+            if (substr_count($dir, '../') >= 5) {
+                throw new \RuntimeException('Unable to find vendor directory, even up to ' . realpath($dir) . '.');
+            }
+        }
+
+        $root = realpath($dir);
+        $this->assertNotNull($root);
     }
 
 }
