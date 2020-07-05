@@ -1,6 +1,6 @@
 {
   "name": "unicate/rigatoni",
-  "description": "Cli",
+  "description": "Rigatoni - A simple dish - made of fresh SQL migrations.",
   "type": "project",
   "license": "MIT",
   "require": {
