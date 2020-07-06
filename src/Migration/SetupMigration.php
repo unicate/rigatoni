@@ -12,7 +12,16 @@ use Unicate\Rigatoni\Core\Config;
 use \PDO;
 use \PDOException;
 
-class SetupMigration extends AbstractMigration {
+class SetupMigration {
+    /**
+     * @var Medoo $db DB-Connection.
+     */
+    protected $db;
+
+    /**
+     * @var Config $config Configuration object.
+     */
+    protected $config;
 
     /**
      * SetupMigration constructor.
@@ -28,7 +37,7 @@ class SetupMigration extends AbstractMigration {
      * Drops existing table and creates new empty one.
      * @return bool
      */
-    public function createTable() : bool {
+    public function createTable(): bool {
         $this->db->drop(AbstractMigration::MIGRATION_TABLE_NAME);
         $pdo = $this->db->create(AbstractMigration::MIGRATION_TABLE_NAME, [
             'id' => ['VARCHAR(32)', 'NOT NULL', 'PRIMARY KEY'],

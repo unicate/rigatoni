@@ -9,14 +9,16 @@ namespace Unicate\Rigatoni\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Unicate\Rigatoni\Core\Config;
+use Unicate\Rigatoni\Migration\AbstractMigration;
 use Unicate\Rigatoni\Migration\MigrationFacade;
 use Unicate\Rigatoni\Util\Formatter;
 
-class MigrationCommand extends Command {
+class InfoCommand extends Command {
 
     private $facade;
     private $config;
@@ -29,34 +31,21 @@ class MigrationCommand extends Command {
 
     protected function configure() {
         $this
-            ->setName('migrate')
-            ->setDescription('Executes pending migrations.');
-
+            ->setName('info')
+            ->setDescription('Shows migration table.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
         $this->facade->refresh();
 
-        $helper = $this->getHelper('question');
         $output->writeln('');
         $output->writeln('Database <options=bold>' . $this->config->getDbName() . '</>.');
-        $output->writeln('Apply all pending migrations');
         $output->writeln('');
-        $question = new ConfirmationQuestion('Do you want to continue? [y/n]',
-            false,
-            '/^(y|j)/i'
-        );
 
-        if (!$helper->ask($input, $output, $question)) {
-            return Command::FAILURE;
-        }
-
-        $pending = $this->facade->getPendingMigrations();
-        $repeatable = $this->facade->getRepeatableMigrations();
-        $migrations = array_merge($pending, $repeatable);
+        $migrations = $this->facade->getAll();
 
         if (empty($migrations)) {
-            $output->writeln('No pending migrations.');
+            $output->writeln('No migrations found.');
         }
 
         // Table Headers
@@ -65,9 +54,7 @@ class MigrationCommand extends Command {
         $table->setHeaders(['Type', 'File', 'Status', 'Installed on']);
         $table->render();
 
-        // Table output
         foreach ($migrations as $migration) {
-            $success = $this->facade->applyMigration($migration);
             $table->appendRow([
                 $migration->getPrefix(),
                 $migration->getFile(),
@@ -76,6 +63,17 @@ class MigrationCommand extends Command {
             ]);
         }
         $output->writeln('');
+
+        foreach ($migrations as $migration) {
+
+            $errors = $migration->getErrors();
+            if (!empty($errors)) {
+                $output->writeln('<error>Migration:' . $migration->getFile() . '</error>');
+                $output->writeln($errors);
+                $output->writeln('');
+            }
+        }
+
 
         return Command::SUCCESS;
     }

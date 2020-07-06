@@ -12,7 +12,7 @@ use Unicate\Rigatoni\Core\Config;
 use \PDO;
 use \PDOException;
 
-class GenericMigration extends AbstractMigration {
+class GenericMigration extends AbstractMigration implements GenericMigrationInterface {
 
     /**
      * GenericMigration constructor.
@@ -28,7 +28,7 @@ class GenericMigration extends AbstractMigration {
      * Get all migrations from database.
      * @return MigrationVO[]
      */
-    public function getAllMigrations(): array {
+    public function getAll(): array {
         $result = $this->db->select(
             AbstractMigration::MIGRATION_TABLE_NAME, '*', [
                 'ORDER' => ['version' => 'ASC']

@@ -12,7 +12,7 @@ use Unicate\Rigatoni\Core\Config;
 use \PDO;
 use \PDOException;
 
-class UndoMigration extends AbstractMigration {
+class UndoMigration extends GenericMigration {
 
     /**
      * UndoMigration constructor.
@@ -20,11 +20,10 @@ class UndoMigration extends AbstractMigration {
      * @param Config $config
      */
     public function __construct(Medoo $db, Config $config) {
-        $this->db = $db;
-        $this->config = $config;
+        parent::__construct($db, $config);
     }
 
-    public function getAll() {
+    public function getAll(): array {
         $result = $this->db->select(
             AbstractMigration::MIGRATION_TABLE_NAME, '*',
             [

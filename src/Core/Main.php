@@ -16,6 +16,7 @@ use Unicate\Rigatoni\Command\DefaultCommand;
 use Unicate\Rigatoni\Command\InitCommand;
 use Unicate\Rigatoni\Command\MigrationCommand;
 use Unicate\Rigatoni\Command\SetupCommand;
+use Unicate\Rigatoni\Command\InfoCommand;
 use Unicate\Rigatoni\Command\UndoCommand;
 use Unicate\Rigatoni\Services\RoutingService;
 use Psr\Container\ContainerInterface;
@@ -43,6 +44,7 @@ class Main {
         if (file_exists(Config::getConfigFilePath())) {
             $application->add($container->get(CheckCommand::class));
             $application->add($container->get(SetupCommand::class));
+            $application->add($container->get(InfoCommand::class));
             $application->add($container->get(MigrationCommand::class));
             $application->add($container->get(UndoCommand::class));
         }

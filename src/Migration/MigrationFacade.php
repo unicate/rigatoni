@@ -58,10 +58,13 @@ class MigrationFacade {
 
     public function refresh() {
         $fileMigrations = $this->fileMigration->getAll();
-        $dbMigrations = $this->genericMigration->getAllMigrations();
+        $dbMigrations = $this->genericMigration->getAll();
         $this->fileMigration->sync($fileMigrations, $dbMigrations);
     }
 
+    public function getAll() {
+        return $this->genericMigration->getAll();
+    }
     public function applyMigration(MigrationVO $migration) {
         return $this->genericMigration->applyMigration($migration);
     }

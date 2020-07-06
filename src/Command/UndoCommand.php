@@ -9,6 +9,7 @@ namespace Unicate\Rigatoni\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -54,7 +55,6 @@ class UndoCommand extends Command {
             false,
             '/^(y|j)/i'
         );
-
         if (!$helper->ask($input, $output, $question)) {
             return Command::FAILURE;
         }
@@ -68,12 +68,17 @@ class UndoCommand extends Command {
         // Table Headers
         $section = $output->section();
         $table = new Table($section);
-        $table->setHeaders(['Type', 'File', 'Status', 'Success']);
+        $table->setHeaders(['Type', 'File', 'Status', 'Installed on']);
         $table->render();
 
         foreach ($migrations as $migration) {
             $success = $this->facade->applyMigration($migration);
-            $table->appendRow([$migration->getPrefix(), $migration->getFile(), $migration->getStatus(), Formatter::success($success === true)]);
+            $table->appendRow([
+                $migration->getPrefix(),
+                $migration->getFile(),
+                Formatter::status($migration->getStatus()),
+                $migration->getInstalledOn()
+            ]);
             if ($migration->getPrefix() === AbstractMigration::PREFIX_UNDO_MIGRATION) {
                 $undoneMigration = $this->facade->getMigration(AbstractMigration::PREFIX_VERSIONED_MIGRATION, $migration->getVersion());
                 if (!$undoneMigration->empty()) {
@@ -81,7 +86,12 @@ class UndoCommand extends Command {
                     $undoneMigration->setErrors(null);
                     $undoneMigration->setInstalledOn(null);
                     $this->facade->updateMigration($undoneMigration);
-                    $table->appendRow([$undoneMigration->getPrefix(), $undoneMigration->getFile(), $undoneMigration->getStatus(), Formatter::success($success === true)]);
+                    $table->appendRow([
+                        $undoneMigration->getPrefix(),
+                        $undoneMigration->getFile(),
+                        $undoneMigration->getStatus(),
+                        $undoneMigration->getInstalledOn()
+                    ]);
                 }
             }
         }

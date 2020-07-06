@@ -11,19 +11,18 @@ namespace Unicate\Rigatoni\Migration;
 use Medoo\Medoo;
 use Unicate\Rigatoni\Core\Config;
 
-class FileMigration extends AbstractMigration {
+class FileMigration extends GenericMigration {
 
     protected $db;
     protected $config;
 
     /**
-     * FiledMigration constructor.
+     * FileMigration constructor.
      * @param Medoo $db
      * @param Config $config
      */
     public function __construct(Medoo $db, Config $config) {
-        $this->db = $db;
-        $this->config = $config;
+        parent::__construct($db, $config);
     }
 
     /**
