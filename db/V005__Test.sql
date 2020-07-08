@@ -10,7 +10,7 @@ CREATE TABLE `test_005`
   DEFAULT CHARSET = utf8;
 
 
-INSERT INTO `test_004` (`name`, `text`, `status`)
+INSERT INTO `test_005` (`name`, `text`, `status`)
 VALUES
     ('first', 'Some Check Version 1', '1'),
     ('second', 'Some Check Version 2', '2');
