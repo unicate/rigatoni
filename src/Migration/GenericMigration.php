@@ -31,7 +31,7 @@ class GenericMigration extends AbstractMigration implements GenericMigrationInte
     public function getAll(): array {
         $result = $this->db->select(
             AbstractMigration::MIGRATION_TABLE_NAME, '*', [
-                'ORDER' => ['version' => 'ASC']
+                'ORDER' => ['version' => 'ASC', 'file' => 'ASC']
             ]
         );
         return ($result === false) ? $this->toMigration([]) : $this->toMigration($result);
@@ -49,7 +49,7 @@ class GenericMigration extends AbstractMigration implements GenericMigrationInte
             [
                 'prefix' => $prefix,
                 'version' => $version,
-                'ORDER' => ['version' => 'ASC']
+                'ORDER' => ['version' => 'ASC', 'file' => 'ASC']
             ]
         );
         return (!empty($result)) ? $this->toMigration($result)[0] : new MigrationVO('', '', '');

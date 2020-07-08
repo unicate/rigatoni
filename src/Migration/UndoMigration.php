@@ -28,7 +28,7 @@ class UndoMigration extends GenericMigration {
             AbstractMigration::MIGRATION_TABLE_NAME, '*',
             [
                 'prefix' => AbstractMigration::PREFIX_UNDO_MIGRATION,
-                'ORDER' => ['version' => 'DESC']
+                'ORDER' => ['version' => 'DESC', 'file' => 'DESC']
             ]
         );
         return ($result === false) ? array() : $this->toMigration($result);
@@ -40,7 +40,7 @@ class UndoMigration extends GenericMigration {
             [
                 'prefix' => AbstractMigration::PREFIX_UNDO_MIGRATION,
                 'version[>=]' => $version,
-                'ORDER' => ['version' => 'DESC']
+                'ORDER' => ['version' => 'DESC', 'file' => 'DESC']
             ]
         );
         return ($result === false) ? array() : $this->toMigration($result);

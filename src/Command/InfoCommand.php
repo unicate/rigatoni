@@ -49,19 +49,18 @@ class InfoCommand extends Command {
         }
 
         // Table Headers
-        $section = $output->section();
-        $table = new Table($section);
+        $table = new Table($output);
         $table->setHeaders(['Type', 'File', 'Status', 'Installed on']);
-        $table->render();
 
         foreach ($migrations as $migration) {
-            $table->appendRow([
+            $table->addRow([
                 $migration->getPrefix(),
                 $migration->getFile(),
                 Formatter::status($migration->getStatus()),
                 $migration->getInstalledOn()
             ]);
         }
+        $table->render();
         $output->writeln('');
 
         foreach ($migrations as $migration) {

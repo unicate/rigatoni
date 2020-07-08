@@ -8,6 +8,7 @@
 namespace Unicate\Rigatoni\Command;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -59,22 +60,29 @@ class MigrationCommand extends Command {
             $output->writeln('No pending migrations.');
         }
 
+        // Progress
+        $progressBar = new ProgressBar($output, count($migrations));
+        $progressBar->start();
+
         // Table Headers
-        $section = $output->section();
-        $table = new Table($section);
+        $table = new Table($output);
         $table->setHeaders(['Type', 'File', 'Status', 'Installed on']);
-        $table->render();
 
         // Table output
         foreach ($migrations as $migration) {
+            $progressBar->advance();
             $success = $this->facade->applyMigration($migration);
-            $table->appendRow([
+            $table->addRow([
                 $migration->getPrefix(),
                 $migration->getFile(),
                 Formatter::status($migration->getStatus()),
                 $migration->getInstalledOn()
             ]);
         }
+
+        $output->writeln('');
+        $progressBar->finish();
+        $table->render();
         $output->writeln('');
 
         return Command::SUCCESS;

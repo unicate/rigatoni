@@ -10,6 +10,7 @@ namespace Unicate\Rigatoni\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\QuestionHelper;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -65,15 +66,19 @@ class UndoCommand extends Command {
             $output->writeln('No undo migrations.');
         }
 
-        // Table Headers
-        $section = $output->section();
-        $table = new Table($section);
-        $table->setHeaders(['Type', 'File', 'Status', 'Installed on']);
-        $table->render();
+        // Progress
+        $progressBar = new ProgressBar($output, count($migrations));
+        $progressBar->start();
 
+        // Table Headers
+        $table = new Table($output);
+        $table->setHeaders(['Type', 'File', 'Status', 'Installed on']);
+
+        // Table Output
         foreach ($migrations as $migration) {
+            $progressBar->advance();
             $success = $this->facade->applyMigration($migration);
-            $table->appendRow([
+            $table->addRow([
                 $migration->getPrefix(),
                 $migration->getFile(),
                 Formatter::status($migration->getStatus()),
@@ -86,7 +91,7 @@ class UndoCommand extends Command {
                     $undoneMigration->setErrors(null);
                     $undoneMigration->setInstalledOn(null);
                     $this->facade->updateMigration($undoneMigration);
-                    $table->appendRow([
+                    $table->addRow([
                         $undoneMigration->getPrefix(),
                         $undoneMigration->getFile(),
                         $undoneMigration->getStatus(),
@@ -95,6 +100,10 @@ class UndoCommand extends Command {
                 }
             }
         }
+
+        $output->writeln('');
+        $progressBar->finish();
+        $table->render();
         $output->writeln('');
 
         return Command::SUCCESS;

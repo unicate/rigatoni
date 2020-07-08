@@ -28,7 +28,7 @@ class RepeatableMigration extends GenericMigration {
             AbstractMigration::MIGRATION_TABLE_NAME, '*',
             [
                 'prefix' => AbstractMigration::PREFIX_REPEATABLE_MIGRATION,
-                'ORDER' => ['version' => 'ASC']
+                'ORDER' => ['version' => 'ASC', 'file' => 'ASC']
             ]
         );
         return ($result === false) ? array() : $this->toMigration($result);

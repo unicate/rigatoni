@@ -28,7 +28,7 @@ class VersionedMigration extends GenericMigration {
             AbstractMigration::MIGRATION_TABLE_NAME, '*',
             [
                 'prefix' => AbstractMigration::PREFIX_VERSIONED_MIGRATION,
-                'ORDER' => ['version' => 'ASC']
+                'ORDER' => ['version' => 'ASC', 'file' => 'ASC']
             ]
         );
         return ($result === false) ? array() : $this->toMigration($result);
