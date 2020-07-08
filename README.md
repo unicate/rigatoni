@@ -1,6 +1,6 @@
 [logo]: img/logo.png "Rigatoni"
 [migratescreen]: img/migrate-screen.png "Migrate screen"
-[classes]: img/class-diagram.png "Class diagram" | width=100
+[classes]: img/class-diagram.png "Class diagram"
 ![alt text][logo]
 # Rigatoni
 
@@ -47,6 +47,7 @@
     - Reverts executed migrations.
 
 ![alt text][migratescreen]
+
 
 ## Installation
 
