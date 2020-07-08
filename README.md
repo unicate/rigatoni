@@ -1,4 +1,6 @@
-[logo]: logo.png "Rigatoni"
+[logo]: img/logo.png "Rigatoni"
+[migratescreen]: img/migrate-screen.png "Migrate screen"
+[classes]: img/class-diagram.png "Class diagram" | width=100
 ![alt text][logo]
 # Rigatoni
 
@@ -44,6 +46,8 @@
 - undo
     - Reverts executed migrations.
 
+![alt text][migratescreen]
+
 ## Installation
 
 Installation Use Git or Composer:
@@ -70,6 +74,11 @@ Check - Does some config and connection checking.
 ```
 ./rigatoni check
 ```
+Info - Shows all entries from migration table.
+
+```
+./rigatoni info
+```
 
 Setup - Migrations-table will be created. (existing will be dropped).
 
@@ -91,6 +100,8 @@ Undo migration
 In case you would like to write your own integration to use Rigatoni in 
 your project just have a look at the MigrationFacade class and the methods
 provided.
+
+![alt text][classes]
 
 ## Disclaimer & License
 
